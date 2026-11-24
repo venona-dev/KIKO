@@ -156,7 +156,7 @@ async function handleCallSignal(msg){
   if(msg.from!==callPeer)return;
   if(msg.type==="reject"||msg.type==="busy"||msg.type==="end"){finishCall(false);toast(msg.type==="busy"?"Собеседник уже разговаривает":msg.type==="reject"?"Звонок отклонён":"Звонок завершён");return;}
   if(msg.type==="answer"&&peerConnection){await peerConnection.setRemoteDescription(new RTCSessionDescription(msg.data));for(const c of queuedIce.splice(0))await peerConnection.addIceCandidate(new RTCIceCandidate(c));setCallStatus("Соединяем…");}
-  if(msg.type==="ice"&&peerConnection){if(peerConnection.remoteDescription)await peerConnection.addIceCandidate(new RTCIceCandidate(msg.data));else queuedIce.push(msg.data);}
+  if(msg.type==="ice"&&callPeer){if(peerConnection?.remoteDescription)await peerConnection.addIceCandidate(new RTCIceCandidate(msg.data));else queuedIce.push(msg.data);}
 }
 async function acceptCall(){
   if(!incomingOffer)return;
@@ -193,7 +193,8 @@ $("endCall").onclick=()=>finishCall(true);
 $("callClose").onclick=()=>finishCall(true);
 $("toggleMic").onclick=()=>{const t=localCallStream?.getAudioTracks()[0];if(t){t.enabled=!t.enabled;$("toggleMic").textContent=t.enabled?"🎙 Выкл. микрофон":"🎙 Включить микрофон";}};
 $("toggleCamera").onclick=()=>{const t=localCallStream?.getVideoTracks()[0];if(t){t.enabled=!t.enabled;$("toggleCamera").textContent=t.enabled?"📷 Выкл. камеру":"📷 Включить камеру";}};
-\nlet recorder=null, recordingChunks=[];
+
+let recorder=null, recordingChunks=[];
 $("recordButton").addEventListener("click",async()=>{
   const button=$("recordButton");
   if(recorder && recorder.state==="recording"){recorder.stop();button.textContent="🎙";button.classList.remove("recording");return;}
