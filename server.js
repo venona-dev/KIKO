@@ -115,7 +115,7 @@ app.get("/api/me", auth, (req, res) => res.json({ user: req.user }));
 app.get("/api/users", auth, async (req, res) => {
   const q = String(req.query.q || "").trim().toLowerCase();
   const result = await pool.query(
-    "SELECT id,username FROM users WHERE id<>$1 AND username LIKE $2 ORDER BY username LIMIT 40",
+    "SELECT id,username FROM users WHERE id<>$1 AND username ILIKE $2 ORDER BY username LIMIT 40",
     [req.user.id, `%${q.slice(0,24)}%`]
   );
   res.json(result.rows);
