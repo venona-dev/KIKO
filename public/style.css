@@ -26,3 +26,16 @@
  .auth-shell{min-height:100dvh;padding:22px}.auth-card{padding:22px}.auth-card input{min-height:44px;font-size:16px}
 }
 @media(max-width:380px){.sidebar{gap:18px;padding-left:8px;padding-right:8px}.nav{flex-basis:104px}.top-brand{font-size:17px}.message-compose .primary{font-size:11px;padding:9px}}
+
+/* Emoji and voice message controls */
+.message-compose{position:relative;align-items:center}
+.tool-btn{width:40px;height:40px;flex:0 0 40px;border-radius:11px;background:#fff0f5;color:#c76c8e;font-size:20px}
+.tool-btn:hover{background:#ffe3ed}
+.record-btn.recording{background:#d94f73;color:#fff;animation:kiko-pulse 1s infinite}
+@keyframes kiko-pulse{50%{opacity:.55}}
+.emoji-panel{position:absolute;z-index:8;bottom:calc(100% + 8px);left:12px;display:grid;grid-template-columns:repeat(8,36px);gap:3px;padding:9px;background:#fff;border:1px solid #f1dfe7;border-radius:14px;box-shadow:0 8px 28px #7c43551c}
+.emoji-panel button{background:transparent;border-radius:8px;padding:5px;font-size:20px}
+.emoji-panel button:hover{background:#fff0f5}
+.voice-player{display:block;width:min(260px,65vw);height:38px}
+.voice-caption{display:block;color:#a58d98;font-size:10px;margin-top:5px}
+@media(max-width:700px){.message-compose{gap:5px}.tool-btn{width:36px;height:40px;flex-basis:36px}.message-compose .primary{font-size:11px;padding:9px 10px}.emoji-panel{grid-template-columns:repeat(6,36px);left:8px}}
