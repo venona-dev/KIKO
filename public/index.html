@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#fff7fa"><meta name="description" content="KIKO — общайся просто">
-  <title>KIKO — общение без лишнего</title><link rel="stylesheet" href="/style.css?v=20261125-1">
+  <title>KIKO — общение без лишнего</title><link rel="stylesheet" href="/style.css?v=20261125-2">
 </head>
 <body>
   <div id="authView" class="auth-shell">
@@ -32,10 +32,10 @@
       <section id="chatsView" class="content hidden">
         <div id="chatLayout" class="chat-layout"><div class="people-panel"><div class="panel-heading">Сообщения</div><input id="userSearch" class="search" placeholder="Найти человека…"><div id="peopleList"></div></div>
         <div class="conversation"><div id="chatPlaceholder" class="chat-placeholder"><span>♡</span><b>Твои личные разговоры</b><small>Выбери человека, чтобы начать общение</small></div>
-        <div id="chatActive" class="hidden chat-active"><div class="chat-head"><div class="my-avatar pink" id="chatAvatar">?</div><b id="chatName"></b></div><div id="messages" class="messages"></div><div id="emojiPanel" class="emoji-panel hidden" aria-label="Выбор эмодзи"><div class="emoji-top"><input id="emojiSearch" class="emoji-search" type="search" placeholder="Поиск эмодзи" autocomplete="off"><button id="emojiClose" class="emoji-close" type="button" aria-label="Закрыть">×</button></div><div id="emojiTabs" class="emoji-tabs"><button type="button" data-category="recent" class="active" aria-label="Недавние">◷</button><button type="button" data-category="smile" aria-label="Смайлы">☺</button><button type="button" data-category="heart" aria-label="Сердца">♡</button><button type="button" data-category="animal" aria-label="Животные">🐻</button><button type="button" data-category="food" aria-label="Еда">🍓</button><button type="button" data-category="activity" aria-label="Активности">⚽</button><button type="button" data-category="object" aria-label="Предметы">💡</button><button type="button" data-category="kiko" aria-label="KIKO custom">✿</button></div><div id="emojiGrid" class="emoji-grid"></div><div class="emoji-footer">Эмодзи <span>•</span> KIKO stickers</div></div><form id="messageForm" class="message-compose"><button id="emojiToggle" class="tool-btn" type="button" aria-label="Эмодзи">☺</button><input id="messageText" maxlength="4000" placeholder="Написать сообщение…" autocomplete="off" required><button id="recordButton" class="tool-btn record-btn" type="button" aria-label="Записать голосовое">🎙</button><button class="primary" type="submit">Отправить</button></form></div></div></div>
+        <div id="chatActive" class="hidden chat-active"><div class="chat-head"><div class="my-avatar pink" id="chatAvatar">?</div><b id="chatName"></b></div><div id="messages" class="messages"></div><form id="messageForm" class="message-compose"><input id="messageText" maxlength="4000" placeholder="Написать сообщение…" autocomplete="off" required><button id="recordButton" class="tool-btn record-btn" type="button" aria-label="Записать голосовое">🎙</button><button class="primary" type="submit">Отправить</button></form></div></div></div>
       </section>
     </main>
   </div>
   <div id="toast" class="toast"></div>
-  <script src="/socket.io/socket.io.js"></script><script src="/app.js?v=20261125-1"></script>
+  <script src="/socket.io/socket.io.js"></script><script src="/app.js?v=20261125-2"></script>
 </body></html>
