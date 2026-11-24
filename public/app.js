@@ -48,7 +48,7 @@ function showApp() {
   socket.on("post:new", post => { if (!$("feed").querySelector('[data-id="' + post.id + '"]')) renderPost(post, true); });
   socket.on("post:like", data => { const card = $("feed").querySelector('[data-id="' + data.postId + '"]'); if(card){ const btn=card.querySelector(".like-btn"); btn.textContent = (data.liked && data.userId===me.id ? "♥ " : "♡ ") + data.likes; if(data.userId===me.id) btn.classList.toggle("liked",data.liked); } });
   loadFeed();
-  loadPeople();
+  loadPeople("");
 }
 async function boot() { if (!token) return; try { const data = await api("/api/me"); me = data.user; showApp(); } catch { logout(); } }
 document.querySelectorAll(".tab").forEach(btn => btn.addEventListener("click", () => {
@@ -101,11 +101,13 @@ document.querySelectorAll(".nav").forEach(btn => btn.onclick = () => {
   const account=btn.dataset.view==="account"; $("wallView").classList.toggle("hidden",chats||account); $("chatsView").classList.toggle("hidden",!chats); $("accountView").classList.toggle("hidden",!account); $("pageTitle").textContent=account?"Аккаунт":chats?"Личные чаты":"Общая стена"; if(chats) loadPeople(); if(account) loadProfile();
 });
 async function loadPeople(q="") {
-  try { knownPeople=await api("/api/users?q="+encodeURIComponent(q)); renderPeople(); } catch(e){toast(e.message);}
+  const query=String(q||"").trim();
+  if(query.length<2){knownPeople=[];renderPeople(query);return;}
+  try { knownPeople=await api("/api/users?q="+encodeURIComponent(query)); renderPeople(query); } catch(e){toast(e.message);}
 }
-function renderPeople() {
+function renderPeople(query="") {
   $("peopleList").innerHTML="";
-  if(!knownPeople.length){$("peopleList").innerHTML='<div class="empty">Пока никого нет</div>';return;}
+  if(!knownPeople.length){$("peopleList").innerHTML='<div class="empty">'+(query.length<2?'Введи минимум 2 символа, чтобы найти человека':'Ничего не найдено. Попробуй другое имя')+'</div>';return;}
   knownPeople.forEach(person=>{
     const item=document.createElement("div"); item.className="person "+(activePerson?.id===person.id?"active":"");
     item.innerHTML='<div class="my-avatar">'+escapeHtml(initials(person.username))+'</div><div><b>'+escapeHtml(person.username)+'</b><small>Личный чат</small></div>';
@@ -113,6 +115,14 @@ function renderPeople() {
   });
 }
 $("userSearch").addEventListener("input",e=>loadPeople(e.target.value));
+
+document.querySelectorAll(".panel-tab").forEach(btn=>btn.addEventListener("click",()=>{
+  const view=btn.dataset.view;
+  $("chatsView").classList.add("hidden");$("wallView").classList.toggle("hidden",view!=="wall");$("accountView").classList.toggle("hidden",view!=="account");
+  document.querySelectorAll(".nav").forEach(n=>n.classList.toggle("active",n.dataset.view===view));
+  $("pageTitle").textContent=view==="account"?"Аккаунт":"Общая стена";
+  if(view==="account")loadProfile();
+}));
 async function openChat(person) {
   activePerson=person; renderPeople(); $("chatLayout").classList.add("mobile-chat-open"); $("chatPlaceholder").classList.add("hidden"); $("chatActive").classList.remove("hidden");
   $("chatName").textContent=person.username; $("chatAvatar").textContent=initials(person.username); $("messages").innerHTML="";
