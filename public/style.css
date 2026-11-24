@@ -104,3 +104,43 @@
   #messageForm{flex-shrink:0}
 }
 @media(min-width:701px){#mobileChatBack{display:none!important}}
+
+/* KIKO profile, themes and immersive calls */
+:root{--accent:#d66f98}
+.primary,.preview-button{background:var(--accent)!important}
+.account-shell{max-width:760px;margin:0 auto;display:grid;gap:16px;padding-bottom:30px}
+.account-hero{display:flex;align-items:center;gap:18px;padding:22px;border-radius:22px;background:linear-gradient(135deg,#fff0f6,#f6edff);border:1px solid #f3dce7}
+.account-hero h2{margin:0 0 5px;font-size:22px;color:#674b5a}.account-hero p{margin:0;color:#987b89;font-size:13px}
+.profile-avatar{width:76px;height:76px;flex:0 0 76px;border-radius:26px;display:grid;place-items:center;background:#f5dce7;color:#b9577e;font-size:30px;font-weight:700;background-size:cover;background-position:center}
+.my-avatar.has-photo{background-size:cover;background-position:center;color:transparent}
+.settings-card{padding:20px;border:1px solid #f0e3e9;border-radius:18px;background:var(--panel,#fff);box-shadow:0 8px 30px #4d25300a}
+.settings-card h3{margin:0 0 15px;color:var(--ink,#6c5360);font-size:16px}
+.setting-row{display:flex;flex-direction:column;gap:8px;margin:12px 0;color:#8b7180;font-size:12px}
+.setting-row input,.setting-row select{width:100%;min-height:43px;padding:10px 12px;border:1px solid #eddae3;border-radius:11px;background:#fff;color:#614b57;font:inherit;font-size:14px}
+.theme-preview{margin:16px 0;padding:18px;border-radius:16px;background:#fffafd;border:1px solid #f1e3e9;color:#715665;display:grid;gap:20px}
+.theme-preview>div{display:flex;justify-content:space-between;align-items:center;gap:12px}.preview-button{color:white;border-radius:12px;padding:10px 15px}
+body[data-theme="dark"],body[data-theme="midnight"]{background:#17151d;color:#eee}
+body[data-theme="dark"] .main,body[data-theme="midnight"] .main{background:#1c1923}
+body[data-theme="dark"] .topbar h1,body[data-theme="midnight"] .topbar h1{color:#f3eaf1}
+body[data-theme="dark"] .settings-card,body[data-theme="midnight"] .settings-card{background:#282330;border-color:#3c3444}
+body[data-theme="dark"] .settings-card h3,body[data-theme="midnight"] .settings-card h3{color:#f3eaf1}
+body[data-theme="dark"] .setting-row,body[data-theme="midnight"] .setting-row{color:#c5b6c7}
+body[data-theme="lavender"]{background:#f6f2ff}
+body[data-wallpaper="gradient"] .messages{background:linear-gradient(145deg,#fff6fa,#f2edff)}
+body[data-wallpaper="grid"] .messages{background-color:#fffafd;background-image:radial-gradient(#e8cbd9 1px,transparent 1px);background-size:18px 18px}
+body[data-wallpaper="plain"] .messages{background:#fff}
+.theme-preview[data-theme="dark"],.theme-preview[data-theme="midnight"]{background:#292431;color:#f5eefa}
+.theme-preview[data-theme="lavender"]{background:#f0eaff}
+.theme-preview[data-wallpaper="gradient"]{background:linear-gradient(135deg,#fff0f6,#eee8ff)}
+.theme-preview[data-wallpaper="grid"]{background-color:#fffafd;background-image:radial-gradient(#e8cbd9 1px,transparent 1px);background-size:16px 16px}
+.call-overlay.fullscreen-call{padding:0;display:block;background:#09080d;overflow:hidden}
+.call-overlay.fullscreen-call .call-card{width:100%;height:100%;max-width:none;border-radius:0;padding:calc(14px + env(safe-area-inset-top)) 14px calc(14px + env(safe-area-inset-bottom));background:#101017;color:white;display:flex;flex-direction:column;box-shadow:none}
+.call-overlay.fullscreen-call .call-top{color:white;flex:0 0 auto}
+.call-overlay.fullscreen-call .call-top button{color:white}
+.call-overlay.fullscreen-call .call-media{flex:1;min-height:0;margin:12px 0;border-radius:16px}
+.call-overlay.fullscreen-call #remoteVideo{height:100%;max-height:none;object-fit:contain}
+.call-overlay.fullscreen-call #localVideo{right:16px;bottom:16px;width:clamp(92px,25vw,150px);height:clamp(130px,32vh,210px);z-index:2}
+.call-overlay.fullscreen-call .call-controls{flex:0 0 auto;padding-bottom:env(safe-area-inset-bottom)}
+.call-overlay.fullscreen-call.video-call #remoteVideo{object-fit:cover}
+.call-overlay.fullscreen-call #callStatus{bottom:14px;left:14px}
+@media(max-width:700px){.account-shell{padding:0 2px 25px}.account-hero{padding:18px}.settings-card{padding:16px}.call-overlay.fullscreen-call .call-media{margin:8px 0}.call-overlay.fullscreen-call .call-controls button{padding:12px 14px;font-size:12px}}
