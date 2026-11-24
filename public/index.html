@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#fff7fa"><meta name="description" content="KIKO — общайся просто">
+  <title>KIKO — общение без лишнего</title><link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div id="authView" class="auth-shell">
+    <div class="brand-mark">kiko<span>✿</span></div>
+    <p class="tagline">общение без лишнего</p>
+    <section class="auth-card">
+      <div class="tabs"><button class="tab active" data-mode="login">Войти</button><button class="tab" data-mode="register">Создать аккаунт</button></div>
+      <form id="authForm"><label>Имя пользователя<input id="username" autocomplete="username" minlength="3" maxlength="24" required placeholder="например, anya"></label>
+      <label>Пароль<input id="password" type="password" autocomplete="current-password" minlength="8" required placeholder="не менее 8 символов"></label>
+      <button class="primary full" type="submit" id="authSubmit">Войти</button><p id="authError" class="error"></p></form>
+    </section><p class="muted tiny">Твои разговоры и публикации хранятся на сервере.</p>
+  </div>
+  <div id="appView" class="app-shell hidden">
+    <aside class="sidebar">
+      <div class="brand-small">kiko<span>✿</span></div>
+      <button class="nav active" data-view="wall"><span>⌂</span> Общая стена</button>
+      <button class="nav" data-view="chats"><span>♡</span> Личные чаты</button>
+      <div class="sidebar-bottom"><div class="my-avatar" id="myAvatar">k</div><div class="my-info"><b id="myName"></b><small>в сети</small></div><button id="logout" class="icon-btn" title="Выйти">↗</button></div>
+    </aside>
+    <main class="main">
+      <header class="topbar"><div><span class="eyebrow">ТВОЁ ПРОСТРАНСТВО</span><h1 id="pageTitle">Общая стена</h1></div><div class="top-brand">kiko<span>✿</span></div></header>
+      <section id="wallView" class="content">
+        <form id="postForm" class="composer"><div class="my-avatar pink" id="postAvatar">k</div><div class="compose-body"><textarea id="postText" maxlength="1000" placeholder="Чем хочешь поделиться?" required></textarea><div class="compose-footer"><span class="muted tiny">Будь собой ♡</span><button class="primary" type="submit">Опубликовать</button></div></div></form>
+        <div id="feed" class="feed"><div class="empty">Здесь скоро появятся публикации ✿</div></div>
+      </section>
+      <section id="chatsView" class="content hidden">
+        <div class="chat-layout"><div class="people-panel"><div class="panel-heading">Сообщения</div><input id="userSearch" class="search" placeholder="Найти человека…"><div id="peopleList"></div></div>
+        <div class="conversation"><div id="chatPlaceholder" class="chat-placeholder"><span>♡</span><b>Твои личные разговоры</b><small>Выбери человека, чтобы начать общение</small></div>
+        <div id="chatActive" class="hidden chat-active"><div class="chat-head"><div class="my-avatar pink" id="chatAvatar">?</div><b id="chatName"></b></div><div id="messages" class="messages"></div><form id="messageForm" class="message-compose"><input id="messageText" maxlength="4000" placeholder="Написать сообщение…" autocomplete="off" required><button class="primary" type="submit">Отправить</button></form></div></div></div>
+      </section>
+    </main>
+  </div>
+  <div id="toast" class="toast"></div>
+  <script src="/socket.io/socket.io.js"></script><script src="/app.js"></script>
+</body></html>
