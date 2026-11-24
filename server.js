@@ -56,6 +56,13 @@ async function initDb() {
     ALTER TABLE messages ADD COLUMN IF NOT EXISTS message_type VARCHAR(10) NOT NULL DEFAULT 'text';
     ALTER TABLE messages ADD COLUMN IF NOT EXISTS audio_data BYTEA;
     ALTER TABLE messages ADD COLUMN IF NOT EXISTS audio_mime VARCHAR(100);
+    CREATE TABLE IF NOT EXISTS message_reactions (
+      message_id INTEGER NOT NULL REFERENCES messages(id) ON DELETE CASCADE,
+      user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      emoji VARCHAR(16) NOT NULL,
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      PRIMARY KEY(message_id,user_id)
+    );
     CREATE INDEX IF NOT EXISTS messages_pair_idx ON messages(sender_id, recipient_id, created_at);
     CREATE INDEX IF NOT EXISTS posts_created_idx ON posts(created_at DESC);
   `);
@@ -155,6 +162,39 @@ app.get("/api/messages/:userId", auth, async (req, res) => {
     ORDER BY m.created_at ASC LIMIT 300
   `, [req.user.id, other]);
   res.json(result.rows);
+});
+
+
+app.post("/api/messages/:messageId/reaction", auth, async (req, res) => {
+  try {
+    const messageId = Number(req.params.messageId);
+    const emoji = String(req.body.emoji || "");
+    const allowed = ["❤️","👍","😂","😮","😢","🔥","👏","😍"];
+    if (!Number.isInteger(messageId) || messageId < 1 || !allowed.includes(emoji))
+      return res.status(400).json({ error: "Некорректная реакция" });
+    const found = await pool.query(
+      "SELECT id,sender_id,recipient_id FROM messages WHERE id=$1 AND (sender_id=$2 OR recipient_id=$2)",
+      [messageId, req.user.id]
+    );
+    if (!found.rowCount) return res.status(404).json({ error: "Сообщение не найдено" });
+    const current = await pool.query("SELECT emoji FROM message_reactions WHERE message_id=$1 AND user_id=$2", [messageId, req.user.id]);
+    if (current.rows[0]?.emoji === emoji) {
+      await pool.query("DELETE FROM message_reactions WHERE message_id=$1 AND user_id=$2", [messageId, req.user.id]);
+    } else {
+      await pool.query(
+        "INSERT INTO message_reactions(message_id,user_id,emoji) VALUES($1,$2,$3) ON CONFLICT(message_id,user_id) DO UPDATE SET emoji=EXCLUDED.emoji,created_at=NOW()",
+        [messageId, req.user.id, emoji]
+      );
+    }
+    const aggregate = await pool.query(
+      "SELECT emoji,COUNT(*)::int AS count,BOOL_OR(user_id=$2) AS mine FROM message_reactions WHERE message_id=$1 GROUP BY emoji ORDER BY MIN(created_at)",
+      [messageId, req.user.id]
+    );
+    const data = { messageId, reactions: aggregate.rows };
+    const message = found.rows[0];
+    io.to(`user:${message.sender_id}`).to(`user:${message.recipient_id}`).emit("message:reaction", data);
+    res.json(data);
+  } catch (e) { console.error(e); res.status(500).json({ error: "Не удалось сохранить реакцию" }); }
 });
 
 io.use((socket, next) => {
