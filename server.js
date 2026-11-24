@@ -19,7 +19,7 @@ const pool = new Pool({
 });
 
 app.use(cors());
-app.use(express.json({ limit: "32kb" }));
+app.use(express.json({ limit: "8mb" }));
 app.use(express.static(path.join(__dirname, "public")));
 app.get("/health", (req, res) => res.json({ ok: true }));
 
@@ -48,8 +48,14 @@ async function initDb() {
       sender_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
       recipient_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
       body VARCHAR(4000) NOT NULL,
+      message_type VARCHAR(10) NOT NULL DEFAULT 'text',
+      audio_data BYTEA,
+      audio_mime VARCHAR(100),
       created_at TIMESTAMPTZ DEFAULT NOW()
     );
+    ALTER TABLE messages ADD COLUMN IF NOT EXISTS message_type VARCHAR(10) NOT NULL DEFAULT 'text';
+    ALTER TABLE messages ADD COLUMN IF NOT EXISTS audio_data BYTEA;
+    ALTER TABLE messages ADD COLUMN IF NOT EXISTS audio_mime VARCHAR(100);
     CREATE INDEX IF NOT EXISTS messages_pair_idx ON messages(sender_id, recipient_id, created_at);
     CREATE INDEX IF NOT EXISTS posts_created_idx ON posts(created_at DESC);
   `);
@@ -143,7 +149,7 @@ app.post("/api/posts/:id/like", auth, async (req, res) => {
 app.get("/api/messages/:userId", auth, async (req, res) => {
   const other = Number(req.params.userId);
   const result = await pool.query(`
-    SELECT m.id,m.sender_id,m.recipient_id,m.body,m.created_at,u.username AS sender_name
+    SELECT m.id,m.sender_id,m.recipient_id,m.body,m.message_type,encode(m.audio_data,'base64') AS audio_base64,m.audio_mime,m.created_at,u.username AS sender_name
     FROM messages m JOIN users u ON u.id=m.sender_id
     WHERE (m.sender_id=$1 AND m.recipient_id=$2) OR (m.sender_id=$2 AND m.recipient_id=$1)
     ORDER BY m.created_at ASC LIMIT 300
@@ -162,13 +168,17 @@ io.on("connection", socket => {
   socket.on("message:send", async (payload, callback) => {
     try {
       const recipient = Number(payload?.recipientId);
-      const body = String(payload?.body || "").trim();
-      if (!recipient || recipient === socket.user.id || !body || body.length > 4000) throw new Error("Некорректное сообщение");
+      const isAudio = Boolean(payload?.audio_base64);
+      const body = isAudio ? "Голосовое сообщение" : String(payload?.body || "").trim();
+      const audio = isAudio ? Buffer.from(String(payload.audio_base64), "base64") : null;
+      const audioMime = isAudio ? String(payload.audio_mime || "audio/webm").slice(0,100) : null;
+      if (!recipient || recipient === socket.user.id || (!isAudio && (!body || body.length > 4000)) ||
+          (isAudio && (!audio.length || audio.length > 5*1024*1024 || !/^audio\//.test(audioMime)))) throw new Error("Некорректное сообщение");
       const target = await pool.query("SELECT id FROM users WHERE id=$1", [recipient]);
       if (!target.rowCount) throw new Error("Пользователь не найден");
       const result = await pool.query(
-        "INSERT INTO messages(sender_id,recipient_id,body) VALUES($1,$2,$3) RETURNING id,sender_id,recipient_id,body,created_at",
-        [socket.user.id, recipient, body]
+        "INSERT INTO messages(sender_id,recipient_id,body,message_type,audio_data,audio_mime) VALUES($1,$2,$3,$4,$5,$6) RETURNING id,sender_id,recipient_id,body,message_type,encode(audio_data,'base64') AS audio_base64,audio_mime,created_at",
+        [socket.user.id, recipient, body, isAudio ? "audio" : "text", audio, audioMime]
       );
       const message = { ...result.rows[0], sender_name: socket.user.username };
       io.to(`user:${recipient}`).to(`user:${socket.user.id}`).emit("message:new", message);
