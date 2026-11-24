@@ -68,7 +68,7 @@ async function openChat(person) {
 }
 function appendMessage(m) {
   if(!activePerson) return;
-  const node=document.createElement("div"); node.className="bubble "+(m.sender_id===me.id?"mine":"");
+  const node=document.createElement("div"); node.className="bubble "+(m.sender_id===me.id?"mine":""); node.dataset.message=m.id;
   node.innerHTML=escapeHtml(m.body)+'<time>'+time(m.created_at)+'</time>'; $("messages").append(node); $("messages").scrollTop=$("messages").scrollHeight;
 }
 $("messageForm").addEventListener("submit",e=>{
