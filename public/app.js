@@ -1,7 +1,7 @@
 const $ = id => document.getElementById(id);
 let token = localStorage.getItem("kiko_token");
 let me = null, socket = null, authMode = "login", activePerson = null, knownPeople = [];
-let peerConnection=null, localCallStream=null, remoteCallStream=null, callPeer=null, callMode="audio", incomingOffer=null, queuedIce=[], callId=null, callHistoryStarted=false;
+let peerConnection=null, localCallStream=null, remoteCallStream=null, callPeer=null, callMode="audio", incomingOffer=null, queuedIce=[], callId=null, callHistoryStarted=false, callInitiatorId=null;
 const api = async (url, options = {}) => {
   const res = await fetch(url, { ...options, headers: { "Content-Type": "application/json", ...(token ? { Authorization: "Bearer " + token } : {}), ...(options.headers || {}) } });
   const data = await res.json().catch(() => ({}));
@@ -173,7 +173,7 @@ function hideCallOverlay(){ $("callOverlay").classList.add("hidden"); $("callOve
 async function startCall(mode){
   if(!activePerson||!socket)return toast("Сначала открой личный чат");
   if(peerConnection)return toast("Звонок уже идёт");
-  callPeer=activePerson.id;callMode=mode;incomingOffer=null;queuedIce=[];callId=crypto.randomUUID();callHistoryStarted=false;
+  callPeer=activePerson.id;callMode=mode;incomingOffer=null;queuedIce=[];callId=crypto.randomUUID();callHistoryStarted=false;callInitiatorId=me.id;
   try{
     if(!navigator.mediaDevices?.getUserMedia)throw new Error("Для звонков нужен доступ к камере и микрофону по HTTPS");
     localCallStream=await navigator.mediaDevices.getUserMedia({audio:true,video:mode==="video"});
@@ -198,7 +198,7 @@ async function handleCallSignal(msg){
   if(!msg||!socket)return;
   if(msg.type==="offer"){
     if(peerConnection||incomingOffer){socket.emit("call:signal",{to:msg.from,type:"busy"});return;}
-    incomingOffer=msg;callPeer=msg.from;callMode=msg.callType==="video"?"video":"audio";callId=msg.callId||crypto.randomUUID();callHistoryStarted=false;
+    incomingOffer=msg;callPeer=msg.from;callMode=msg.callType==="video"?"video":"audio";callId=msg.callId||crypto.randomUUID();callHistoryStarted=false;callInitiatorId=msg.from;
     $("callTitle").textContent=callMode==="video"?"Входящий видеозвонок":"Входящий аудиозвонок";
     $("incomingCallText").textContent=(msg.fromName||"Пользователь")+" звонит тебе";
     $("incomingCallActions").classList.remove("hidden");$("activeCallActions").classList.add("hidden");$("callMedia").classList.add("hidden");showCallOverlay();return;
@@ -228,7 +228,7 @@ async function acceptCall(){
   }catch(e){socket.emit("call:signal",{to:callPeer,type:"reject"});finishCall(false);toast("Не удалось подключиться к звонку. Проверь разрешения камеры и микрофона.");}
 }
 function startCallHistory(){
-  if(callHistoryStarted||!callPeer||!socket||!callId)return;
+  if(callHistoryStarted||!callPeer||!socket||!callId||incomingOffer||me.id!==callInitiatorId)return;
   callHistoryStarted=true;
   socket.emit("call:history:start",{to:callPeer,callId,callType:callMode});
 }
@@ -237,7 +237,7 @@ function finishCall(notify=true){
   if(notify&&callPeer&&socket)socket.emit("call:signal",{to:callPeer,type:"end",callId});
   if(peerConnection){peerConnection.ontrack=null;peerConnection.onicecandidate=null;peerConnection.close();}
   peerConnection=null;if(localCallStream)localCallStream.getTracks().forEach(t=>t.stop());
-  localCallStream=null;remoteCallStream=null;callPeer=null;incomingOffer=null;queuedIce=[];callId=null;callHistoryStarted=false;
+  localCallStream=null;remoteCallStream=null;callPeer=null;incomingOffer=null;queuedIce=[];callId=null;callHistoryStarted=false;callInitiatorId=null;
   $("localVideo").srcObject=null;$("remoteVideo").srcObject=null;$("remoteAudio").srcObject=null;
   $("callMedia").classList.remove("hidden");$("incomingCallActions").classList.add("hidden");$("activeCallActions").classList.add("hidden");hideCallOverlay();
 }
