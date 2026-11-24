@@ -21,6 +21,7 @@ const pool = new Pool({
 app.use(cors());
 app.use(express.json({ limit: "32kb" }));
 app.use(express.static(path.join(__dirname, "public")));
+app.get("/health", (req, res) => res.json({ ok: true }));
 
 async function initDb() {
   await pool.query(`
