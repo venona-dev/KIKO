@@ -17,6 +17,7 @@ function showApp() {
   $("myName").textContent = me.username; $("myAvatar").textContent = initials(me.username); $("postAvatar").textContent = initials(me.username);
   socket = io({ auth: { token } });
   socket.on("message:new", message => { if (activePerson && (message.sender_id === activePerson.id || message.recipient_id === activePerson.id)) appendMessage(message); });
+  socket.on("message:reaction", data => updateMessageReactions(data));
   socket.on("post:new", post => { if (!$("feed").querySelector('[data-id="' + post.id + '"]')) renderPost(post, true); });
   socket.on("post:like", data => { const card = $("feed").querySelector('[data-id="' + data.postId + '"]'); if(card){ const btn=card.querySelector(".like-btn"); btn.textContent = (data.liked && data.userId===me.id ? "♥ " : "♡ ") + data.likes; if(data.userId===me.id) btn.classList.toggle("liked",data.liked); } });
   loadFeed();
@@ -75,7 +76,33 @@ function appendMessage(m) {
     const caption=document.createElement("small"); caption.className="voice-caption"; caption.textContent="Голосовое сообщение"; node.append(caption);
   } else { node.append(document.createTextNode(m.body||"")); }
   const stamp=document.createElement("time"); stamp.textContent=time(m.created_at); node.append(stamp);
-  $("messages").append(node); $("messages").scrollTop=$("messages").scrollHeight;
+  const reactionArea=document.createElement("div"); reactionArea.className="reaction-area";
+  const chips=document.createElement("div"); chips.className="reaction-chips"; reactionArea.append(chips);
+  const picker=document.createElement("div"); picker.className="reaction-picker hidden";
+  ["❤️","👍","😂","😮","😢","🔥","👏","😍"].forEach(emoji=>{
+    const choice=document.createElement("button"); choice.type="button"; choice.textContent=emoji; choice.setAttribute("aria-label","Поставить реакцию "+emoji);
+    choice.onclick=async()=>{try{const data=await api("/api/messages/"+m.id+"/reaction",{method:"POST",body:JSON.stringify({emoji})});updateMessageReactions(data);picker.classList.add("hidden");}catch(e){toast(e.message);}};
+    picker.append(choice);
+  });
+  const add=document.createElement("button"); add.type="button"; add.className="reaction-add"; add.textContent="＋"; add.setAttribute("aria-label","Добавить реакцию");
+  add.onclick=()=>picker.classList.toggle("hidden");
+  reactionArea.append(add,picker); node.append(reactionArea);
+  $("messages").append(node); renderReactionChips(chips,m.reactions||[],m.id); $("messages").scrollTop=$("messages").scrollHeight;
+}
+function renderReactionChips(container,reactions,messageId){
+  container.innerHTML="";
+  (reactions||[]).forEach(r=>{
+    const chip=document.createElement("button"); chip.type="button"; chip.className="reaction-chip"+(r.mine?" mine":"");
+    chip.textContent=r.emoji+" "+r.count; chip.title=r.mine?"Убрать свою реакцию":"Поставить реакцию";
+    chip.onclick=async()=>{try{const data=await api("/api/messages/"+messageId+"/reaction",{method:"POST",body:JSON.stringify({emoji:r.emoji})});updateMessageReactions(data);}catch(e){toast(e.message);}};
+    container.append(chip);
+  });
+}
+function updateMessageReactions(data){
+  if(!data?.messageId)return;
+  const node=$("messages").querySelector('[data-message="'+data.messageId+'"]');
+  const chips=node?.querySelector(".reaction-chips");
+  if(chips)renderReactionChips(chips,data.reactions||[],data.messageId);
 }
 $("messageForm").addEventListener("submit",e=>{
   e.preventDefault(); if(!activePerson||!socket)return; const body=$("messageText").value.trim(); if(!body)return;
