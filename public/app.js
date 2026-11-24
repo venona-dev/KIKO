@@ -44,6 +44,7 @@ function showApp() {
   socket.on("call:history:update", renderCallHistory);
   socket.on("message:new", message => { if (activePerson && (message.sender_id === activePerson.id || message.recipient_id === activePerson.id)) appendMessage(message); });
   socket.on("message:reaction", data => updateMessageReactions(data));
+  socket.on("post:comment", comment => receivePostComment(comment));
   socket.on("post:new", post => { if (!$("feed").querySelector('[data-id="' + post.id + '"]')) renderPost(post, true); });
   socket.on("post:like", data => { const card = $("feed").querySelector('[data-id="' + data.postId + '"]'); if(card){ const btn=card.querySelector(".like-btn"); btn.textContent = (data.liked && data.userId===me.id ? "♥ " : "♡ ") + data.likes; if(data.userId===me.id) btn.classList.toggle("liked",data.liked); } });
   loadFeed();
@@ -66,9 +67,32 @@ async function loadFeed() { try { const posts = await api("/api/posts"); $("feed
 function renderPost(p, prepend=false) {
   const empty = $("feed").querySelector(".empty"); if(empty) empty.remove();
   const card = document.createElement("article"); card.className="post"; card.dataset.id=p.id;
-  card.innerHTML='<div class="post-head"><div class="my-avatar">'+escapeHtml(initials(p.username))+'</div><div><div class="post-author">'+escapeHtml(p.username)+'</div><div class="post-time">'+time(p.created_at)+'</div></div></div><div class="post-body">'+escapeHtml(p.body)+'</div><button class="like-btn '+(p.liked?'liked':'')+'">'+(p.liked?'♥':'♡')+' '+(p.likes||0)+'</button>';
+  card.innerHTML='<div class="post-head"><div class="my-avatar">'+escapeHtml(initials(p.username))+'</div><div><div class="post-author">'+escapeHtml(p.username)+'</div><div class="post-time">'+time(p.created_at)+'</div></div></div><div class="post-body">'+escapeHtml(p.body)+'</div><div class="post-actions"><button class="like-btn '+(p.liked?'liked':'')+'">'+(p.liked?'♥':'♡')+' '+(p.likes||0)+'</button><button class="comments-toggle" type="button">💬 Комментарии <span class="comments-count">'+(p.comments_count||0)+'</span></button></div><section class="post-comments hidden"><div class="comments-list"></div><form class="comment-form"><input maxlength="1000" placeholder="Написать комментарий…" required><button class="primary" type="submit">Отправить</button></form></section>';
   card.querySelector(".like-btn").onclick = async () => { try { const d=await api("/api/posts/"+p.id+"/like",{method:"POST"}); const b=card.querySelector(".like-btn"); b.textContent=(d.liked?"♥ ":"♡ ")+d.likes; b.classList.toggle("liked",d.liked); } catch(e){toast(e.message);} };
+  const panel=card.querySelector(".post-comments"),list=card.querySelector(".comments-list"),toggle=card.querySelector(".comments-toggle");
+  toggle.onclick=async()=>{const opening=panel.classList.contains("hidden");panel.classList.toggle("hidden");if(opening)await loadPostComments(p.id,list);};
+  card.querySelector(".comment-form").onsubmit=async e=>{e.preventDefault();const input=e.currentTarget.querySelector("input"),body=input.value.trim();if(!body)return;const button=e.currentTarget.querySelector("button");button.disabled=true;try{const comment=await api("/api/posts/"+p.id+"/comments",{method:"POST",body:JSON.stringify({body})});renderPostComment(comment,list);updatePostCommentCount(p.id,1);input.value="";}catch(err){toast(err.message);}finally{button.disabled=false;}};
   prepend ? $("feed").prepend(card) : $("feed").append(card);
+}
+async function loadPostComments(postId,list){
+  try{const rows=await api("/api/posts/"+postId+"/comments");list.innerHTML="";rows.forEach(comment=>renderPostComment(comment,list));}
+  catch(e){toast(e.message);}
+}
+function renderPostComment(comment,list){
+  if(!list||list.querySelector('[data-comment="'+comment.id+'"]'))return;
+  const item=document.createElement("article");item.className="post-comment";item.dataset.comment=comment.id;
+  item.innerHTML='<b>'+escapeHtml(comment.username)+'</b><p>'+escapeHtml(comment.body)+'</p><time>'+escapeHtml(time(comment.created_at))+'</time>';
+  list.append(item);
+}
+function updatePostCommentCount(postId,delta){
+  const card=$("feed").querySelector('[data-id="'+postId+'"]');if(!card)return;
+  const count=card.querySelector(".comments-count");if(count)count.textContent=String(Math.max(0,Number(count.textContent||0)+delta));
+}
+function receivePostComment(comment){
+  const card=$("feed").querySelector('[data-id="'+comment.post_id+'"]');if(!card)return;
+  const count=card.querySelector(".comments-count");if(count&&me.id!==comment.user_id)updatePostCommentCount(comment.post_id,1);
+  const panel=card.querySelector(".post-comments"),list=card.querySelector(".comments-list");
+  if(!panel?.classList.contains("hidden"))renderPostComment(comment,list);
 }
 $("postForm").addEventListener("submit", async e => { e.preventDefault(); const body=$("postText").value.trim(); if(!body)return; try { const p=await api("/api/posts",{method:"POST",body:JSON.stringify({body})}); if(!$("feed").querySelector('[data-id="'+p.id+'"]')) renderPost(p,true); $("postText").value=""; } catch(e){toast(e.message);} });
 document.querySelectorAll(".nav").forEach(btn => btn.onclick = () => {
