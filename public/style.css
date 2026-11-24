@@ -78,3 +78,18 @@
  .emoji-cell{min-height:38px;font-size:24px}
 }
 \n/* Native system emoji rendering: Apple Color Emoji is selected automatically on iOS/macOS. */\n.emoji-cell,.emoji-tabs button,.message-compose .tool-btn{font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;font-variant-emoji:emoji}\n.emoji-cell{font-size:25px;line-height:1.25;-webkit-font-smoothing:antialiased}\n.emoji-tabs{overflow-x:auto;scrollbar-width:none}\n.emoji-tabs::-webkit-scrollbar{display:none}\n
+/* Refined iOS-like emoji picker controls */
+.emoji-panel{border:1px solid rgba(220,211,218,.8);border-radius:22px;background:rgba(250,249,252,.97);box-shadow:0 16px 44px rgba(35,20,30,.16),0 2px 8px rgba(35,20,30,.06);padding:12px;gap:10px}
+.emoji-search{height:36px;border-radius:12px!important;background:#ecebf0!important;font-size:13px}
+.emoji-close{background:#e9e8ed;color:#68636b;font-size:20px}
+.emoji-tabs{justify-content:space-around;gap:4px;padding:0 0 9px}
+.emoji-tabs button{width:32px;height:32px;flex:0 0 32px;border-radius:50%;font-size:17px;color:#77717b;transition:background .15s,transform .15s}
+.emoji-tabs button.active{background:#e5dfe9;color:#67566f}
+.emoji-tabs button:active{transform:scale(.92)}
+.emoji-grid{height:184px;gap:5px}
+.emoji-cell{min-height:40px;border-radius:11px;font-size:25px}
+.emoji-cell:hover{background:#eeeaf1}
+.emoji-footer{font-size:9px;letter-spacing:.4px;color:#a39ba5}
+.message-compose .tool-btn{border-radius:13px;background:#f0eaf0;color:#78627c}
+.message-compose .tool-btn:hover{background:#e7dce9}
+@media(max-width:700px){.emoji-panel{padding:11px}.emoji-grid{height:178px}.emoji-tabs button{width:30px;flex-basis:30px}}
