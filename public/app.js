@@ -70,7 +70,7 @@ function appendMessage(m) {
   if(!activePerson || $("messages").querySelector('[data-message="'+m.id+'"]')) return;
   const node=document.createElement("div"); node.className="bubble "+(m.sender_id===me.id?"mine":""); node.dataset.message=m.id;
   if(m.message_type==="audio" && m.audio_base64){
-    const audio=document.createElement("audio"); audio.controls=true; audio.preload="metadata";
+    const audio=document.createElement("audio"); audio.controls=true; audio.preload="metadata"; audio.setAttribute("playsinline","");
     audio.src="data:"+(m.audio_mime||"audio/webm")+";base64,"+m.audio_base64; audio.className="voice-player"; node.append(audio);
     const caption=document.createElement("small"); caption.className="voice-caption"; caption.textContent="Голосовое сообщение"; node.append(caption);
   } else { node.append(document.createTextNode(m.body||"")); }
@@ -101,7 +101,9 @@ $("recordButton").addEventListener("click",async()=>{
   if(!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder){toast("Запись аудио не поддерживается этим браузером");return;}
   try{
     const stream=await navigator.mediaDevices.getUserMedia({audio:true});
-    const mime=["audio/webm;codecs=opus","audio/webm","audio/mp4"].find(t=>MediaRecorder.isTypeSupported(t));
+    const isApple=/iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform==="MacIntel" && navigator.maxTouchPoints>1);
+    const formats=isApple?["audio/mp4","audio/mp4;codecs=mp4a.40.2","audio/webm;codecs=opus","audio/webm"]:["audio/webm;codecs=opus","audio/webm","audio/mp4"];
+    const mime=formats.find(t=>MediaRecorder.isTypeSupported(t));
     recorder=new MediaRecorder(stream,mime?{mimeType:mime}:{});
     recordingChunks=[];
     recorder.ondataavailable=e=>{if(e.data.size)recordingChunks.push(e.data);};
