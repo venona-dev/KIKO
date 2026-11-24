@@ -100,19 +100,26 @@ document.querySelectorAll(".nav").forEach(btn => btn.onclick = () => {
   $("wallView").classList.toggle("hidden",chats); $("chatsView").classList.toggle("hidden",!chats);
   const account=btn.dataset.view==="account"; $("wallView").classList.toggle("hidden",chats||account); $("chatsView").classList.toggle("hidden",!chats); $("accountView").classList.toggle("hidden",!account); $("pageTitle").textContent=account?"Аккаунт":chats?"Личные чаты":"Общая стена"; if(chats) loadPeople(); if(account) loadProfile();
 });
+let chatHistory = [];
 async function loadPeople(q="") {
   const query=String(q||"").trim();
-  if(query.length<2){knownPeople=[];renderPeople(query);return;}
-  try { knownPeople=await api("/api/users?q="+encodeURIComponent(query)); renderPeople(query); } catch(e){toast(e.message);}
+  try {
+    if(query.length<2){knownPeople=[];chatHistory=await api("/api/chats");}
+    else {const results=await Promise.all([api("/api/chats"),api("/api/users?q="+encodeURIComponent(query))]);chatHistory=results[0];knownPeople=results[1];}
+    renderPeople(query);
+  } catch(e){toast(e.message);}
 }
 function renderPeople(query="") {
-  $("peopleList").innerHTML="";
-  if(!knownPeople.length){$("peopleList").innerHTML='<div class="empty">'+(query.length<2?'Введи минимум 2 символа, чтобы найти человека':'Ничего не найдено. Попробуй другое имя')+'</div>';return;}
-  knownPeople.forEach(person=>{
-    const item=document.createElement("div"); item.className="person "+(activePerson?.id===person.id?"active":"");
-    item.innerHTML='<div class="my-avatar">'+escapeHtml(initials(person.username))+'</div><div><b>'+escapeHtml(person.username)+'</b><small>Личный чат</small></div>';
-    item.onclick=()=>openChat(person); $("peopleList").append(item);
-  });
+  const root=$("peopleList");root.innerHTML="";
+  const addHeading=(label)=>{const h=document.createElement("div");h.className="people-section-title";h.textContent=label;root.append(h);};
+  const addPerson=(person,subtitle)=>{
+    const item=document.createElement("div");item.className="person "+(activePerson?.id===person.id?"active":"");
+    item.innerHTML='<div class="my-avatar">'+escapeHtml(initials(person.username))+'</div><div><b>'+escapeHtml(person.username)+'</b><small>'+escapeHtml(subtitle)+'</small></div>';
+    item.onclick=()=>openChat(person);root.append(item);
+  };
+  if(chatHistory.length){addHeading("ТВОИ ДИАЛОГИ");chatHistory.forEach(p=>addPerson(p,p.last_message||"Личный чат"));}
+  if(query.length>=2){addHeading("РЕЗУЛЬТАТЫ ПОИСКА");const historyIds=new Set(chatHistory.map(p=>String(p.id)));const matches=knownPeople.filter(p=>!historyIds.has(String(p.id)));if(!matches.length&&!chatHistory.some(p=>p.username.toLowerCase().includes(query.toLowerCase()))){const e=document.createElement("div");e.className="empty";e.textContent="Ничего не найдено. Попробуй другое имя";root.append(e);}matches.forEach(p=>addPerson(p,"Найти пользователя"));}
+  else if(!chatHistory.length){const e=document.createElement("div");e.className="empty";e.textContent="Здесь появятся твои прежние диалоги. Чтобы начать новый, найди человека по имени";root.append(e);}
 }
 $("userSearch").addEventListener("input",e=>loadPeople(e.target.value));
 
