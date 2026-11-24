@@ -77,3 +77,4 @@
  .emoji-tabs button{width:32px;height:32px}
  .emoji-cell{min-height:38px;font-size:24px}
 }
+\n/* Native system emoji rendering: Apple Color Emoji is selected automatically on iOS/macOS. */\n.emoji-cell,.emoji-tabs button,.message-compose .tool-btn{font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;font-variant-emoji:emoji}\n.emoji-cell{font-size:25px;line-height:1.25;-webkit-font-smoothing:antialiased}\n.emoji-tabs{overflow-x:auto;scrollbar-width:none}\n.emoji-tabs::-webkit-scrollbar{display:none}\n
