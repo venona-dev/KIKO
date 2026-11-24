@@ -98,7 +98,7 @@ $("postForm").addEventListener("submit", async e => { e.preventDefault(); const 
 document.querySelectorAll(".nav").forEach(btn => btn.onclick = () => {
   const chats=btn.dataset.view==="chats"; document.querySelectorAll(".nav").forEach(b=>b.classList.toggle("active",b===btn));
   $("wallView").classList.toggle("hidden",chats); $("chatsView").classList.toggle("hidden",!chats);
-  const account=btn.dataset.view==="account"; $("wallView").classList.toggle("hidden",chats||account); $("chatsView").classList.toggle("hidden",!chats); $("accountView").classList.toggle("hidden",!account); $("pageTitle").textContent=account?"Аккаунт":chats?"Личные чаты":"Общая стена"; if(chats) loadPeople(); if(account) loadProfile();
+  const account=btn.dataset.view==="account"; $("wallView").classList.toggle("hidden",chats||account); $("chatsView").classList.toggle("hidden",!chats); $("accountView").classList.toggle("hidden",!account); $("pageTitle").textContent=account?"Профиль":chats?"Личные чаты":"Общая стена"; if(chats) loadPeople(); if(account) loadProfile();
 });
 let chatHistory = [];
 async function loadPeople(q="") {
@@ -127,7 +127,7 @@ document.querySelectorAll(".panel-tab").forEach(btn=>btn.addEventListener("click
   const view=btn.dataset.view;
   $("chatsView").classList.add("hidden");$("wallView").classList.toggle("hidden",view!=="wall");$("accountView").classList.toggle("hidden",view!=="account");
   document.querySelectorAll(".nav").forEach(n=>n.classList.toggle("active",n.dataset.view===view));
-  $("pageTitle").textContent=view==="account"?"Аккаунт":"Общая стена";
+  $("pageTitle").textContent=view==="account"?"Профиль":"Общая стена";
   if(view==="account")loadProfile();
 }));
 async function openChat(person) {
