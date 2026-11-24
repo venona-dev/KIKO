@@ -66,6 +66,17 @@ async function initDb() {
     ALTER TABLE messages ADD COLUMN IF NOT EXISTS message_type VARCHAR(10) NOT NULL DEFAULT 'text';
     ALTER TABLE messages ADD COLUMN IF NOT EXISTS audio_data BYTEA;
     ALTER TABLE messages ADD COLUMN IF NOT EXISTS audio_mime VARCHAR(100);
+    CREATE TABLE IF NOT EXISTS call_history (
+      call_id VARCHAR(80) PRIMARY KEY,
+      caller_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      recipient_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      call_type VARCHAR(10) NOT NULL CHECK (call_type IN ('audio','video')),
+      started_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      ended_at TIMESTAMPTZ,
+      duration_seconds INTEGER NOT NULL DEFAULT 0,
+      status VARCHAR(16) NOT NULL DEFAULT 'ongoing'
+    );
+    CREATE INDEX IF NOT EXISTS call_history_pair_idx ON call_history(caller_id, recipient_id, started_at);
     CREATE TABLE IF NOT EXISTS message_reactions (
       message_id INTEGER NOT NULL REFERENCES messages(id) ON DELETE CASCADE,
       user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -165,6 +176,18 @@ app.post("/api/posts/:id/like", auth, async (req, res) => {
   res.json(data);
 });
 
+app.get("/api/calls/:userId", auth, async (req, res) => {
+  const other = Number(req.params.userId);
+  if (!Number.isInteger(other) || other < 1) return res.status(400).json({ error: "Некорректный собеседник" });
+  const result = await pool.query(
+    `SELECT call_id,caller_id,recipient_id,call_type,started_at,ended_at,duration_seconds,status
+     FROM call_history WHERE (caller_id=$1 AND recipient_id=$2) OR (caller_id=$2 AND recipient_id=$1)
+     ORDER BY started_at ASC LIMIT 200`,
+    [req.user.id, other]
+  );
+  res.json(result.rows);
+});
+
 app.get("/api/messages/:userId", auth, async (req, res) => {
   const other = Number(req.params.userId);
   const result = await pool.query(`
@@ -228,9 +251,47 @@ io.on("connection", socket => {
       if (!target.rowCount) return;
       io.to(`user:${to}`).emit("call:signal", {
         type, from: socket.user.id, fromName: socket.user.username,
-        data: payload.data || null, callType: payload.callType === "video" ? "video" : "audio"
+        data: payload.data || null, callType: payload.callType === "video" ? "video" : "audio",
+        callId: String(payload.callId || "")
       });
     } catch (e) { console.error("Call signaling failed", e); }
+  });
+  socket.on("call:history:start", async payload => {
+    try {
+      const to = Number(payload?.to), callId = String(payload?.callId || "").slice(0,80);
+      const callType = payload?.callType === "video" ? "video" : "audio";
+      if (!Number.isInteger(to) || to < 1 || to === socket.user.id || !callId) return;
+      const target = await pool.query("SELECT id FROM users WHERE id=$1", [to]);
+      if (!target.rowCount) return;
+      const result = await pool.query(
+        `INSERT INTO call_history(call_id,caller_id,recipient_id,call_type,started_at,status)
+         VALUES($1,$2,$3,$4,NOW(),'ongoing') ON CONFLICT(call_id) DO NOTHING
+         RETURNING call_id,caller_id,recipient_id,call_type,started_at,ended_at,duration_seconds,status`,
+        [callId,socket.user.id,to,callType]
+      );
+      if (result.rowCount) {
+        const row=result.rows[0];
+        io.to(`user:${row.caller_id}`).to(`user:${row.recipient_id}`).emit("call:history:update",row);
+      }
+    } catch(e) { console.error("Call history start failed",e); }
+  });
+  socket.on("call:history:end", async payload => {
+    try {
+      const callId=String(payload?.callId || "").slice(0,80);
+      if(!callId)return;
+      const result=await pool.query(
+        `UPDATE call_history SET ended_at=NOW(),
+         duration_seconds=GREATEST(0,FLOOR(EXTRACT(EPOCH FROM (NOW()-started_at)))::int),
+         status='completed'
+         WHERE call_id=$1 AND (caller_id=$2 OR recipient_id=$2) AND ended_at IS NULL
+         RETURNING call_id,caller_id,recipient_id,call_type,started_at,ended_at,duration_seconds,status`,
+        [callId,socket.user.id]
+      );
+      if(result.rowCount){
+        const row=result.rows[0];
+        io.to(`user:${row.caller_id}`).to(`user:${row.recipient_id}`).emit("call:history:update",row);
+      }
+    } catch(e) { console.error("Call history end failed",e); }
   });
   socket.on("message:send", async (payload, callback) => {
     try {
