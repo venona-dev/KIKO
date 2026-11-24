@@ -53,6 +53,14 @@ async function initDb() {
       created_at TIMESTAMPTZ DEFAULT NOW(),
       PRIMARY KEY(user_id, post_id)
     );
+    CREATE TABLE IF NOT EXISTS post_comments (
+      id SERIAL PRIMARY KEY,
+      post_id INTEGER NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
+      user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      body VARCHAR(1000) NOT NULL,
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    );
+    CREATE INDEX IF NOT EXISTS post_comments_post_idx ON post_comments(post_id, created_at);
     CREATE TABLE IF NOT EXISTS messages (
       id SERIAL PRIMARY KEY,
       sender_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -148,12 +156,39 @@ app.get("/api/posts", auth, async (req, res) => {
   const result = await pool.query(`
     SELECT p.id,p.body,p.created_at,u.id AS user_id,u.username,
       COUNT(l.user_id)::int AS likes,
-      BOOL_OR(l.user_id=$1) AS liked
+      BOOL_OR(l.user_id=$1) AS liked,
+      (SELECT COUNT(*)::int FROM post_comments pc WHERE pc.post_id=p.id) AS comments_count
     FROM posts p JOIN users u ON u.id=p.user_id
     LEFT JOIN likes l ON l.post_id=p.id
     GROUP BY p.id,u.id ORDER BY p.created_at DESC LIMIT 100
   `, [req.user.id]);
   res.json(result.rows);
+});
+app.get("/api/posts/:id/comments", auth, async (req, res) => {
+  const postId=Number(req.params.id);
+  if(!Number.isInteger(postId)||postId<1)return res.status(400).json({error:"Некорректная публикация"});
+  const result=await pool.query(
+    `SELECT pc.id,pc.post_id,pc.user_id,pc.body,pc.created_at,u.username
+     FROM post_comments pc JOIN users u ON u.id=pc.user_id
+     WHERE pc.post_id=$1 ORDER BY pc.created_at ASC LIMIT 500`,[postId]
+  );
+  res.json(result.rows);
+});
+app.post("/api/posts/:id/comments", auth, async (req, res) => {
+  try{
+    const postId=Number(req.params.id),body=String(req.body.body||"").trim();
+    if(!Number.isInteger(postId)||postId<1||!body||body.length>1000)
+      return res.status(400).json({error:"Комментарий должен содержать от 1 до 1000 символов"});
+    const exists=await pool.query("SELECT id FROM posts WHERE id=$1",[postId]);
+    if(!exists.rowCount)return res.status(404).json({error:"Публикация не найдена"});
+    const result=await pool.query(
+      `INSERT INTO post_comments(post_id,user_id,body) VALUES($1,$2,$3)
+       RETURNING id,post_id,user_id,body,created_at`,[postId,req.user.id,body]
+    );
+    const comment={...result.rows[0],username:req.user.username};
+    io.emit("post:comment",comment);
+    res.status(201).json(comment);
+  }catch(e){console.error(e);res.status(500).json({error:"Не удалось добавить комментарий"});}
 });
 app.post("/api/posts", auth, async (req, res) => {
   const body = String(req.body.body || "").trim();
