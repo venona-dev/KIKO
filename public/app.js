@@ -86,14 +86,49 @@ $("messageForm").addEventListener("submit",e=>{
   });
 });
 
-$("emojiToggle").addEventListener("click",()=> $("emojiPanel").classList.toggle("hidden"));
-$("emojiPanel").addEventListener("click",e=>{
-  if(e.target.tagName!=="BUTTON") return;
-  const input=$("messageText"), start=input.selectionStart, end=input.selectionEnd, emoji=e.target.textContent;
-  input.value=input.value.slice(0,start)+emoji+input.value.slice(end);
-  input.focus(); input.setSelectionRange(start+emoji.length,start+emoji.length);
-  $("emojiPanel").classList.add("hidden");
+const emojiSets={
+ recent:[],
+ smile:["😀","😃","😄","😁","😆","🥹","😅","😂","🤣","🥲","☺️","😊","😇","🙂","🙃","😉","😌","😍","🥰","😘","😗","😙","😚","😋","😛","😜","🤪","😝","🤗","🤭","🫢","🤫","🤔","🫡","🤐","🤨","😐","😑","😶","🫠","😏","😒","🙄","😬","😮‍💨","🤥","😔","🥺","😢","😭","😤","😠","😡","🤯","😳","🥵","🥶","😱","😨","😰","😥","😓","🤤","😴","🤧","🤒","🤕","😷","🤠","🥳","😎","🤓","🧐"],
+ heart:["❤️","🩷","🧡","💛","💚","💙","🩵","💜","🤎","🖤","🩶","🤍","💔","❤️‍🔥","❤️‍🩹","💕","💞","💓","💗","💖","💘","💝","💟","❣️","💌","💋","💍","💐","🌷","🌸","🌺","🌻","🌼","🪷","✨","⭐","🌟","💫","🫶"],
+ animal:["🐶","🐱","🐭","🐹","🐰","🦊","🐻","🐼","🐻‍❄️","🐨","🐯","🦁","🐮","🐷","🐸","🐵","🙈","🙉","🙊","🐣","🐥","🐧","🦄","🦋","🐝","🐞","🐢","🐬","🦭","🐈","🐕"],
+ food:["🍓","🍒","🍑","🍉","🍇","🍍","🥑","🍋","🍊","🍎","🍏","🫐","🥥","🍰","🎂","🧁","🍩","🍪","🍫","🍬","🍭","🍦","🍧","☕","🧋","🍵","🥐","🍕","🍣","🍜"],
+ activity:["🎀","🎉","🎊","🎈","🎁","🎂","🎨","🎧","🎤","🎵","🎶","💃","🕺","🩰","⚽","🏀","🎮","🧸","🪩","🏖️","🌈","🪄"],
+ object:["📱","💻","📷","🎥","💡","📚","✏️","🖊️","🧷","🪞","🕯️","🛍️","👑","💎","🔑","🗝️","🧿","🪬","☁️","🌙","☀️","⚡","🔥","💧","🌊"],
+ kiko:["૮₍ ˶ᵔ ᵕ ᵔ˶ ₎ა","૮꒰ ˶• ༝ •˶꒱ა","꒰ა ♡ ໒꒱","ദ്ദി(˵ •̀ ᴗ - ˵ ) ✧","(づ๑•ᴗ•๑)づ♡","૮ ˶ᵔ ᵕ ᵔ˶ ა","(｡•́‿•̀｡)","( ˶ˆᗜˆ˵ )","(˶˃ ᵕ ˂˶)","♡(˃͈ દ ˂͈ ༶ )","✿","୨୧","₊˚⊹♡","(๑ᵔ⤙ᵔ๑)","(╥﹏╥)","(¬‿¬)","(づ｡◕‿‿◕｡)づ","꒰ঌ(˶ˆᗜˆ˵)໒꒱","૮₍ ˶•⤙•˶ ₎ა","( ˘͈ ᵕ ˘͈♡)"]
+};
+let activeEmojiCategory="recent", recentEmojis=[];
+try{recentEmojis=JSON.parse(localStorage.getItem("kiko_recent_emojis")||"[]").slice(0,24)}catch{}
+function renderEmojiGrid(){
+ const grid=$("emojiGrid"), query=$("emojiSearch").value.trim().toLowerCase();
+ grid.innerHTML="";
+ let values=activeEmojiCategory==="recent"?recentEmojis:emojiSets[activeEmojiCategory]||[];
+ if(query) values=Object.values(emojiSets).flat().filter(v=>v.toLowerCase().includes(query));
+ if(!values.length){grid.innerHTML='<div class="emoji-empty">Найди свой смайл ✿</div>';return;}
+ values.forEach(value=>{
+  const btn=document.createElement("button");btn.type="button";btn.className="emoji-cell";btn.textContent=value;btn.title=value;btn.addEventListener("click",()=>insertEmoji(value));grid.append(btn);
+ });
+}
+function insertEmoji(value){
+ const input=$("messageText"),start=input.selectionStart??input.value.length,end=input.selectionEnd??input.value.length;
+ input.value=input.value.slice(0,start)+value+input.value.slice(end);
+ input.focus();const cursor=start+value.length;input.setSelectionRange(cursor,cursor);
+ recentEmojis=[value,...recentEmojis.filter(x=>x!==value)].slice(0,24);
+ try{localStorage.setItem("kiko_recent_emojis",JSON.stringify(recentEmojis))}catch{}
+ $("emojiPanel").classList.add("hidden");
+}
+$("emojiToggle").addEventListener("click",()=>{
+ const panel=$("emojiPanel"),opening=panel.classList.contains("hidden");
+ panel.classList.toggle("hidden");if(opening){$("emojiSearch").value="";activeEmojiCategory="recent";$("emojiTabs").querySelectorAll("button").forEach(b=>b.classList.toggle("active",b.dataset.category==="recent"));renderEmojiGrid();}
 });
+$("emojiClose").addEventListener("click",()=>$("emojiPanel").classList.add("hidden"));
+$("emojiTabs").addEventListener("click",e=>{
+ const btn=e.target.closest("button[data-category]");if(!btn)return;
+ activeEmojiCategory=btn.dataset.category;$("emojiSearch").value="";
+ $("emojiTabs").querySelectorAll("button").forEach(b=>b.classList.toggle("active",b===btn));renderEmojiGrid();
+});
+$("emojiSearch").addEventListener("input",()=>renderEmojiGrid());
+document.addEventListener("keydown",e=>{if(e.key==="Escape")$("emojiPanel").classList.add("hidden")});
+renderEmojiGrid();
 let recorder=null, recordingChunks=[];
 $("recordButton").addEventListener("click",async()=>{
   const button=$("recordButton");
