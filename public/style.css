@@ -144,3 +144,12 @@ body[data-wallpaper="plain"] .messages{background:#fff}
 .call-overlay.fullscreen-call.video-call #remoteVideo{object-fit:cover}
 .call-overlay.fullscreen-call #callStatus{bottom:14px;left:14px}
 @media(max-width:700px){.account-shell{padding:0 2px 25px}.account-hero{padding:18px}.settings-card{padding:16px}.call-overlay.fullscreen-call .call-media{margin:8px 0}.call-overlay.fullscreen-call .call-controls button{padding:12px 14px;font-size:12px}}
+
+
+/* Persistent call history cards */
+.call-history-item{display:flex;align-items:center;gap:12px;max-width:min(88%,420px);margin:12px auto;padding:13px 16px;border:1px solid rgba(180,130,155,.2);border-radius:18px;background:rgba(255,255,255,.82);color:#51434a;box-shadow:0 5px 18px rgba(70,35,50,.05)}
+.call-history-icon{width:40px;height:40px;flex:0 0 40px;display:grid;place-items:center;border-radius:14px;background:var(--accent,#d66f98);color:#fff;font-size:19px}
+.call-history-copy{display:flex;flex-direction:column;gap:3px;min-width:0}
+.call-history-copy b{font-size:14px}.call-history-copy span,.call-history-copy small{font-size:12px;color:#8b7c84}
+body[data-theme="dark"] .call-history-item,body[data-theme="midnight"] .call-history-item{background:#252331;color:#f3edf6;border-color:#494253}
+body[data-theme="dark"] .call-history-copy span,body[data-theme="dark"] .call-history-copy small,body[data-theme="midnight"] .call-history-copy span,body[data-theme="midnight"] .call-history-copy small{color:#b8adbf}
