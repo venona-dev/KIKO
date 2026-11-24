@@ -29,8 +29,18 @@ async function initDb() {
       id SERIAL PRIMARY KEY,
       username VARCHAR(24) UNIQUE NOT NULL,
       password_hash TEXT NOT NULL,
-      created_at TIMESTAMPTZ DEFAULT NOW()
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      avatar_data TEXT,
+      status VARCHAR(80) NOT NULL DEFAULT '',
+      theme VARCHAR(20) NOT NULL DEFAULT 'light',
+      accent VARCHAR(20) NOT NULL DEFAULT 'pink',
+      wallpaper VARCHAR(20) NOT NULL DEFAULT 'soft'
     );
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar_data TEXT;
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS status VARCHAR(80) NOT NULL DEFAULT '';
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS theme VARCHAR(20) NOT NULL DEFAULT 'light';
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS accent VARCHAR(20) NOT NULL DEFAULT 'pink';
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS wallpaper VARCHAR(20) NOT NULL DEFAULT 'soft';
     CREATE TABLE IF NOT EXISTS posts (
       id SERIAL PRIMARY KEY,
       user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -110,12 +120,14 @@ app.post("/api/auth/login", async (req, res) => {
     res.json({ token: sign(user), user });
   } catch (e) { console.error(e); res.status(500).json({ error: "Ошибка входа" }); }
 });
-app.get("/api/me", auth, (req, res) => res.json({ user: req.user }));
+app.get("/api/me", auth, async (req, res) => { const r=await pool.query("SELECT id,username,avatar_data,status,theme,accent,wallpaper FROM users WHERE id=$1",[req.user.id]); res.json({user:r.rows[0]}); });
+app.get("/api/profile",auth,async(req,res)=>{const r=await pool.query("SELECT id,username,avatar_data,status,theme,accent,wallpaper FROM users WHERE id=$1",[req.user.id]);res.json(r.rows[0]);});
+app.put("/api/profile",auth,async(req,res)=>{try{const b=req.body||{};const status=String(b.status??"").slice(0,80);const avatar=b.avatar_data===undefined?undefined:(b.avatar_data===null?null:String(b.avatar_data));if(avatar!==undefined&&avatar!==null&&(!/^[A-Za-z0-9+/=]+$/.test(avatar)||avatar.length>2100000))return res.status(400).json({error:"Некорректная аватарка"});const theme=["light","dark","lavender","midnight"].includes(b.theme)?b.theme:undefined;const accent=["pink","violet","blue","mint","orange"].includes(b.accent)?b.accent:undefined;const wallpaper=["soft","gradient","grid","plain"].includes(b.wallpaper)?b.wallpaper:undefined;const r=await pool.query("UPDATE users SET status=$2,avatar_data=COALESCE($3,avatar_data),theme=COALESCE($4,theme),accent=COALESCE($5,accent),wallpaper=COALESCE($6,wallpaper) WHERE id=$1 RETURNING id,username,avatar_data,status,theme,accent,wallpaper",[req.user.id,status,avatar===undefined?null:avatar,theme||null,accent||null,wallpaper||null]);res.json(r.rows[0]);}catch(e){console.error(e);res.status(500).json({error:"Не удалось сохранить профиль"});}});
 
 app.get("/api/users", auth, async (req, res) => {
   const q = String(req.query.q || "").trim().toLowerCase();
   const result = await pool.query(
-    "SELECT id,username FROM users WHERE id<>$1 AND username ILIKE $2 ORDER BY username LIMIT 40",
+    "SELECT id,username,status,avatar_data FROM users WHERE id<>$1 AND username ILIKE $2 ORDER BY username LIMIT 40",
     [req.user.id, `%${q.slice(0,24)}%`]
   );
   res.json(result.rows);
