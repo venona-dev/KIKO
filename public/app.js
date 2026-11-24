@@ -17,12 +17,14 @@ function showApp() {
   $("authView").classList.add("hidden"); $("appView").classList.remove("hidden");
   $("myName").textContent = me.username; $("myAvatar").textContent = initials(me.username); $("postAvatar").textContent = initials(me.username);
   socket = io({ auth: { token } });
+  socket.on("connect_error", err => toast("Связь с сервером прервана. Переподключаемся…"));
   socket.on("call:signal", handleCallSignal);
   socket.on("message:new", message => { if (activePerson && (message.sender_id === activePerson.id || message.recipient_id === activePerson.id)) appendMessage(message); });
   socket.on("message:reaction", data => updateMessageReactions(data));
   socket.on("post:new", post => { if (!$("feed").querySelector('[data-id="' + post.id + '"]')) renderPost(post, true); });
   socket.on("post:like", data => { const card = $("feed").querySelector('[data-id="' + data.postId + '"]'); if(card){ const btn=card.querySelector(".like-btn"); btn.textContent = (data.liked && data.userId===me.id ? "♥ " : "♡ ") + data.likes; if(data.userId===me.id) btn.classList.toggle("liked",data.liked); } });
   loadFeed();
+  loadPeople();
 }
 async function boot() { if (!token) return; try { const data = await api("/api/me"); me = data.user; showApp(); } catch { logout(); } }
 document.querySelectorAll(".tab").forEach(btn => btn.addEventListener("click", () => {
@@ -67,8 +69,15 @@ $("userSearch").addEventListener("input",e=>loadPeople(e.target.value));
 async function openChat(person) {
   activePerson=person; renderPeople(); $("chatLayout").classList.add("mobile-chat-open"); $("chatPlaceholder").classList.add("hidden"); $("chatActive").classList.remove("hidden");
   $("chatName").textContent=person.username; $("chatAvatar").textContent=initials(person.username); $("messages").innerHTML="";
-  try { const list=await api("/api/messages/"+person.id); list.forEach(appendMessage); } catch(e){toast(e.message);}
+  await syncMessages();
 }
+async function syncMessages(){
+  if(!activePerson || !token)return;
+  const personId=activePerson.id;
+  try { const list=await api("/api/messages/"+personId); if(activePerson?.id!==personId)return; list.forEach(appendMessage); }
+  catch(e){ if(e.message!=="Не авторизован") console.warn("Message sync failed",e); }
+}
+setInterval(syncMessages,4000);
 function appendMessage(m) {
   if(!activePerson || $("messages").querySelector('[data-message="'+m.id+'"]')) return;
   const node=document.createElement("div"); node.className="bubble "+(m.sender_id===me.id?"mine":""); node.dataset.message=m.id;
@@ -185,6 +194,7 @@ function finishCall(notify=true){
   $("localVideo").srcObject=null;$("remoteVideo").srcObject=null;$("remoteAudio").srcObject=null;
   $("callMedia").classList.remove("hidden");$("incomingCallActions").classList.add("hidden");$("activeCallActions").classList.add("hidden");hideCallOverlay();
 }
+$("mobileChatBack").onclick=()=>{$("chatLayout").classList.remove("mobile-chat-open");};
 $("audioCallButton").onclick=()=>startCall("audio");
 $("videoCallButton").onclick=()=>startCall("video");
 $("acceptCall").onclick=acceptCall;
