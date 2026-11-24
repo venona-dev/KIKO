@@ -205,6 +205,21 @@ io.use((socket, next) => {
 });
 io.on("connection", socket => {
   socket.join(`user:${socket.user.id}`);
+
+  socket.on("call:signal", async payload => {
+    try {
+      const to = Number(payload?.to);
+      const type = String(payload?.type || "");
+      if (!Number.isInteger(to) || to < 1 || to === socket.user.id ||
+          !["offer","answer","ice","end","reject","busy"].includes(type)) return;
+      const target = await pool.query("SELECT id FROM users WHERE id=$1", [to]);
+      if (!target.rowCount) return;
+      io.to(`user:${to}`).emit("call:signal", {
+        type, from: socket.user.id, fromName: socket.user.username,
+        data: payload.data || null, callType: payload.callType === "video" ? "video" : "audio"
+      });
+    } catch (e) { console.error("Call signaling failed", e); }
+  });
   socket.on("message:send", async (payload, callback) => {
     try {
       const recipient = Number(payload?.recipientId);
