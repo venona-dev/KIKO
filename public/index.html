@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#fff7fa"><meta name="description" content="KIKO — общайся просто">
-  <title>KIKO — общение без лишнего</title><link rel="stylesheet" href="/style.css?v=20261125-3">
+  <title>KIKO — общение без лишнего</title><link rel="stylesheet" href="/style.css?v=20261125-4">
 </head>
 <body>
   <div id="authView" class="auth-shell">
@@ -32,10 +32,18 @@
       <section id="chatsView" class="content hidden">
         <div id="chatLayout" class="chat-layout"><div class="people-panel"><div class="panel-heading">Сообщения</div><input id="userSearch" class="search" placeholder="Найти человека…"><div id="peopleList"></div></div>
         <div class="conversation"><div id="chatPlaceholder" class="chat-placeholder"><span>♡</span><b>Твои личные разговоры</b><small>Выбери человека, чтобы начать общение</small></div>
-        <div id="chatActive" class="hidden chat-active"><div class="chat-head"><div class="my-avatar pink" id="chatAvatar">?</div><b id="chatName"></b></div><div id="messages" class="messages"></div><form id="messageForm" class="message-compose"><input id="messageText" maxlength="4000" placeholder="Написать сообщение…" autocomplete="off" required><button id="recordButton" class="tool-btn record-btn" type="button" aria-label="Записать голосовое">🎙</button><button class="primary" type="submit">Отправить</button></form></div></div></div>
+        <div id="chatActive" class="hidden chat-active"><div class="chat-head"><div class="my-avatar pink" id="chatAvatar">?</div><b id="chatName"></b><div class="call-actions"><button id="audioCallButton" type="button" title="Аудиозвонок" aria-label="Аудиозвонок">☎</button><button id="videoCallButton" type="button" title="Видеозвонок" aria-label="Видеозвонок">▣</button></div></div><div id="messages" class="messages"></div><form id="messageForm" class="message-compose"><input id="messageText" maxlength="4000" placeholder="Написать сообщение…" autocomplete="off" required><button id="recordButton" class="tool-btn record-btn" type="button" aria-label="Записать голосовое">🎙</button><button class="primary" type="submit">Отправить</button></form></div></div></div>
       </section>
     </main>
   </div>
+  <section id="callOverlay" class="call-overlay hidden" aria-live="polite">
+    <div class="call-card">
+      <div class="call-top"><b id="callTitle">Звонок</b><button id="callClose" type="button" aria-label="Закрыть">×</button></div>
+      <div id="incomingCallActions" class="incoming-call hidden"><p id="incomingCallText">Входящий звонок</p><div><button id="acceptCall" class="call-accept" type="button">Ответить</button><button id="declineCall" class="call-hangup" type="button">Отклонить</button></div></div>
+      <div id="callMedia" class="call-media"><video id="remoteVideo" autoplay playsinline></video><video id="localVideo" autoplay muted playsinline></video><audio id="remoteAudio" autoplay></audio><p id="callStatus">Соединение…</p></div>
+      <div id="activeCallActions" class="call-controls hidden"><button id="toggleMic" type="button">🎙 Выкл. микрофон</button><button id="toggleCamera" type="button">📷 Выкл. камеру</button><button id="endCall" class="call-hangup" type="button">Завершить</button></div>
+    </div>
+  </section>
   <div id="toast" class="toast"></div>
-  <script src="/socket.io/socket.io.js"></script><script src="/app.js?v=20261125-3"></script>
+  <script src="/socket.io/socket.io.js"></script><script src="/app.js?v=20261125-4"></script>
 </body></html>
