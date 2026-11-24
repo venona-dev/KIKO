@@ -39,3 +39,20 @@
 .voice-player{display:block;width:min(260px,65vw);height:38px}
 .voice-caption{display:block;color:#a58d98;font-size:10px;margin-top:5px}
 @media(max-width:700px){.message-compose{gap:5px}.tool-btn{width:36px;height:40px;flex-basis:36px}.message-compose .primary{font-size:11px;padding:9px 10px}.emoji-panel{grid-template-columns:repeat(6,36px);left:8px}}
+
+
+/* Chat layout and emoji panel visibility fixes */
+.conversation{display:flex;flex-direction:column;min-height:0;height:100%}
+.chat-placeholder{width:100%;flex:1;min-height:0}
+.chat-active{position:relative;flex:1;min-height:0;height:100%}
+.messages{min-height:0;overscroll-behavior:contain}
+.message-compose{flex:0 0 auto;min-width:0;background:#fff}
+.emoji-panel{bottom:62px;left:10px;max-width:calc(100% - 20px)}
+@media(max-width:700px){
+ .conversation{height:100%;min-height:0}
+ .chat-active{height:100%;min-height:0}
+ .emoji-panel{bottom:64px;left:8px;grid-template-columns:repeat(6,minmax(30px,36px));gap:3px}
+ .emoji-panel button{min-width:30px;min-height:34px}
+ .message-compose input{width:0;flex:1 1 0}
+ .message-compose .primary{flex:0 0 auto}
+}
