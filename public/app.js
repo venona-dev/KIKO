@@ -17,7 +17,7 @@ async function loadProfile(){
  try{const p=await api("/api/profile");me={...me,...p};$("profileName").textContent=me.username;$("profileStatus").value=me.status||"";$("profileStatusPreview").textContent=me.status||"Настрой свой профиль";$("themeChoice").value=me.theme||"light";$("accentChoice").value=me.accent||"pink";$("wallpaperChoice").value=me.wallpaper||"soft";paintProfileAvatar();applyAppearance();}catch(e){toast(e.message);}
 }
 function paintProfileAvatar(){
- [$("myAvatar"),$("postAvatar"),$("profileAvatarPreview")].forEach(el=>{if(!el)return;el.textContent=me.avatar_data?"":initials(me.username);el.style.backgroundImage=me.avatar_data?'url("data:image/jpeg;base64,'+me.avatar_data+'")':"";el.classList.toggle("has-photo",!!me.avatar_data);});
+ [$("myAvatar"),$("postAvatar"),$("profileAvatarPreview")].forEach(el=>{if(!el)return;el.textContent=me.avatar_data?"":initials(me.username);el.style.backgroundImage=me.avatar_data?'url("'+me.avatar_data+'")':"";el.classList.toggle("has-photo",!!me.avatar_data);});
 }
 function applyAppearance(){
  const colors={pink:"#d66f98",violet:"#9275d8",blue:"#5b9bd5",mint:"#48a98e",orange:"#e69a69"};
@@ -27,7 +27,7 @@ function applyAppearance(){
 }
 $("saveProfile").onclick=async()=>{
  const file=$("avatarFile").files[0];let avatar_data=me.avatar_data||null;
- if(file){if(file.size>1500000){toast("Аватарка должна быть меньше 1,5 МБ");return;}avatar_data=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(String(r.result).split(",")[1]);r.onerror=reject;r.readAsDataURL(file);});}
+ if(file){if(file.size>1500000){toast("Аватарка должна быть меньше 1,5 МБ");return;}avatar_data=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(String(r.result));r.onerror=reject;r.readAsDataURL(file);});}
  try{const p=await api("/api/profile",{method:"PUT",body:JSON.stringify({status:$("profileStatus").value,avatar_data})});me={...me,...p};$("avatarFile").value="";paintProfileAvatar();$("profileStatusPreview").textContent=me.status||"Настрой свой профиль";toast("Профиль сохранён");}catch(e){toast(e.message);}
 };
 $("saveAppearance").onclick=async()=>{
@@ -159,7 +159,7 @@ async function startCall(mode){
     if(!navigator.mediaDevices?.getUserMedia)throw new Error("Для звонков нужен доступ к камере и микрофону по HTTPS");
     localCallStream=await navigator.mediaDevices.getUserMedia({audio:true,video:mode==="video"});
     remoteCallStream=new MediaStream();
-    $("localVideo").srcObject=localCallStream;$("localVideo").style.transform="scaleX(-1)";$("remoteVideo").style.transform="none";$("remoteVideo").srcObject=remoteCallStream;
+    $("localVideo").srcObject=localCallStream;$("localVideo").style.transform="none";$("remoteVideo").style.transform="none";$("remoteVideo").srcObject=remoteCallStream;
     $("remoteVideo").classList.toggle("audio-only",mode==="audio");
     $("localVideo").classList.toggle("hidden",mode==="audio");
     $("remoteAudio").srcObject=remoteCallStream;
