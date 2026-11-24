@@ -62,7 +62,7 @@ function renderPeople() {
 }
 $("userSearch").addEventListener("input",e=>loadPeople(e.target.value));
 async function openChat(person) {
-  activePerson=person; renderPeople(); $("chatPlaceholder").classList.add("hidden"); $("chatActive").classList.remove("hidden");
+  activePerson=person; renderPeople(); $("chatLayout").classList.add("mobile-chat-open"); $("chatPlaceholder").classList.add("hidden"); $("chatActive").classList.remove("hidden");
   $("chatName").textContent=person.username; $("chatAvatar").textContent=initials(person.username); $("messages").innerHTML="";
   try { const list=await api("/api/messages/"+person.id); list.forEach(appendMessage); } catch(e){toast(e.message);}
 }
