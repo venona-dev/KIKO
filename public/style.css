@@ -85,3 +85,22 @@
 .call-controls{display:flex;justify-content:center;flex-wrap:wrap}
 .call-controls button:not(.call-hangup){background:#f8eaf0;color:#795668}
 @media(max-width:700px){.call-card{padding:13px}.call-media{min-height:230px}#remoteVideo{height:55vh}#localVideo{width:86px;height:116px}.call-actions{gap:4px}.call-actions button{width:31px;height:31px}}
+
+
+/* Mobile chat recovery: keep people search and conversation panes usable */
+@media(max-width:700px){
+  #chatsView{width:100%;min-width:0}
+  #chatLayout{display:block;width:100%;height:calc(100dvh - 155px);min-height:420px;overflow:hidden}
+  #chatLayout:not(.mobile-chat-open) .people-panel{display:block!important;width:100%;height:100%;overflow-y:auto}
+  #chatLayout:not(.mobile-chat-open) .conversation{display:none!important}
+  #chatLayout.mobile-chat-open .people-panel{display:none!important}
+  #chatLayout.mobile-chat-open .conversation{display:block!important;position:absolute;inset:0;width:100%;height:100%;background:#fff}
+  #userSearch{display:block!important;width:100%;min-height:44px;font-size:16px}
+  #peopleList{display:block!important;min-height:40px}
+  #peopleList .person{display:flex!important}
+  #mobileChatBack{display:inline-flex!important;flex:0 0 36px}
+  #chatActive{min-height:0}
+  #messages{min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  #messageForm{flex-shrink:0}
+}
+@media(min-width:701px){#mobileChatBack{display:none!important}}
