@@ -143,6 +143,28 @@ app.get("/api/me", auth, async (req, res) => { const r=await pool.query("SELECT 
 app.get("/api/profile",auth,async(req,res)=>{const r=await pool.query("SELECT id,username,avatar_data,status,theme,accent,wallpaper FROM users WHERE id=$1",[req.user.id]);res.json(r.rows[0]);});
 app.put("/api/profile",auth,async(req,res)=>{try{const b=req.body||{};const status=b.status===undefined?null:String(b.status).slice(0,80);const avatar=b.avatar_data===undefined?undefined:(b.avatar_data===null?null:String(b.avatar_data));if(avatar!==undefined&&avatar!==null&&(!/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(avatar)||avatar.length>2100000))return res.status(400).json({error:"Некорректная аватарка"});const theme=["light","dark","lavender","midnight"].includes(b.theme)?b.theme:undefined;const accent=["pink","violet","blue","mint","orange"].includes(b.accent)?b.accent:undefined;const wallpaper=["soft","gradient","grid","plain"].includes(b.wallpaper)?b.wallpaper:undefined;const r=await pool.query("UPDATE users SET status=COALESCE($2,status),avatar_data=COALESCE($3,avatar_data),theme=COALESCE($4,theme),accent=COALESCE($5,accent),wallpaper=COALESCE($6,wallpaper) WHERE id=$1 RETURNING id,username,avatar_data,status,theme,accent,wallpaper",[req.user.id,status,avatar===undefined?null:avatar,theme||null,accent||null,wallpaper||null]);res.json(r.rows[0]);}catch(e){console.error(e);res.status(500).json({error:"Не удалось сохранить профиль"});}});
 
+
+app.get("/api/chats", auth, async (req, res) => {
+  const result = await pool.query(`
+    SELECT u.id,u.username,u.status,u.avatar_data,latest.body AS last_message,latest.created_at AS last_message_at
+    FROM (
+      SELECT CASE WHEN sender_id=$1 THEN recipient_id ELSE sender_id END AS user_id,
+             MAX(created_at) AS last_at
+      FROM messages WHERE sender_id=$1 OR recipient_id=$1
+      GROUP BY CASE WHEN sender_id=$1 THEN recipient_id ELSE sender_id END
+    ) recent
+    JOIN users u ON u.id=recent.user_id
+    JOIN LATERAL (
+      SELECT body,created_at FROM messages m
+      WHERE (m.sender_id=$1 AND m.recipient_id=u.id) OR (m.sender_id=u.id AND m.recipient_id=$1)
+      ORDER BY created_at DESC LIMIT 1
+    ) latest ON true
+    ORDER BY recent.last_at DESC
+    LIMIT 100
+  `, [req.user.id]);
+  res.json(result.rows);
+});
+
 app.get("/api/users", auth, async (req, res) => {
   const q = String(req.query.q || "").trim().toLowerCase().slice(0,24);
   // Never expose a directory of registered users: search is opt-in and requires at least 2 characters.
