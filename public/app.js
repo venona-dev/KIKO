@@ -67,9 +67,15 @@ async function openChat(person) {
   try { const list=await api("/api/messages/"+person.id); list.forEach(appendMessage); } catch(e){toast(e.message);}
 }
 function appendMessage(m) {
-  if(!activePerson) return;
+  if(!activePerson || $("messages").querySelector('[data-message="'+m.id+'"]')) return;
   const node=document.createElement("div"); node.className="bubble "+(m.sender_id===me.id?"mine":""); node.dataset.message=m.id;
-  node.innerHTML=escapeHtml(m.body)+'<time>'+time(m.created_at)+'</time>'; $("messages").append(node); $("messages").scrollTop=$("messages").scrollHeight;
+  if(m.message_type==="audio" && m.audio_base64){
+    const audio=document.createElement("audio"); audio.controls=true; audio.preload="metadata";
+    audio.src="data:"+(m.audio_mime||"audio/webm")+";base64,"+m.audio_base64; audio.className="voice-player"; node.append(audio);
+    const caption=document.createElement("small"); caption.className="voice-caption"; caption.textContent="Голосовое сообщение"; node.append(caption);
+  } else { node.append(document.createTextNode(m.body||"")); }
+  const stamp=document.createElement("time"); stamp.textContent=time(m.created_at); node.append(stamp);
+  $("messages").append(node); $("messages").scrollTop=$("messages").scrollHeight;
 }
 $("messageForm").addEventListener("submit",e=>{
   e.preventDefault(); if(!activePerson||!socket)return; const body=$("messageText").value.trim(); if(!body)return;
@@ -78,5 +84,45 @@ $("messageForm").addEventListener("submit",e=>{
     $("messageText").value="";
     if(result.message && !$("messages").querySelector('[data-message="'+result.message.id+'"]')) appendMessage(result.message);
   });
+});
+
+$("emojiToggle").addEventListener("click",()=> $("emojiPanel").classList.toggle("hidden"));
+$("emojiPanel").addEventListener("click",e=>{
+  if(e.target.tagName!=="BUTTON") return;
+  const input=$("messageText"), start=input.selectionStart, end=input.selectionEnd, emoji=e.target.textContent;
+  input.value=input.value.slice(0,start)+emoji+input.value.slice(end);
+  input.focus(); input.setSelectionRange(start+emoji.length,start+emoji.length);
+  $("emojiPanel").classList.add("hidden");
+});
+let recorder=null, recordingChunks=[];
+$("recordButton").addEventListener("click",async()=>{
+  const button=$("recordButton");
+  if(recorder && recorder.state==="recording"){recorder.stop();button.textContent="🎙";button.classList.remove("recording");return;}
+  if(!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder){toast("Запись аудио не поддерживается этим браузером");return;}
+  try{
+    const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+    const mime=["audio/webm;codecs=opus","audio/webm","audio/mp4"].find(t=>MediaRecorder.isTypeSupported(t));
+    recorder=new MediaRecorder(stream,mime?{mimeType:mime}:{});
+    recordingChunks=[];
+    recorder.ondataavailable=e=>{if(e.data.size)recordingChunks.push(e.data);};
+    recorder.onstop=async()=>{
+      stream.getTracks().forEach(t=>t.stop());
+      const blob=new Blob(recordingChunks,{type:recorder.mimeType||"audio/webm"});
+      if(blob.size>5*1024*1024){toast("Голосовое слишком длинное (максимум 5 МБ)");return;}
+      if(!activePerson||!socket){toast("Сначала открой личный чат");return;}
+      button.disabled=true;toast("Отправляем голосовое…");
+      try{
+        const base64=await new Promise((resolve,reject)=>{
+          const reader=new FileReader();reader.onload=()=>resolve(String(reader.result).split(",")[1]);reader.onerror=reject;reader.readAsDataURL(blob);
+        });
+        socket.emit("message:send",{recipientId:activePerson.id,audio_base64:base64,audio_mime:blob.type},result=>{
+          button.disabled=false;
+          if(!result?.ok){toast(result?.error||"Не удалось отправить голосовое");return;}
+          if(result.message)appendMessage(result.message);
+        });
+      }catch(err){button.disabled=false;toast("Не удалось подготовить аудио");}
+    };
+    recorder.start();button.textContent="■";button.classList.add("recording");toast("Идёт запись. Нажми ■, чтобы отправить");
+  }catch(err){toast("Разреши доступ к микрофону для записи");}
 });
 boot();
