@@ -56,3 +56,24 @@
  .message-compose input{width:0;flex:1 1 0}
  .message-compose .primary{flex:0 0 auto}
 }
+
+/* iOS-inspired KIKO emoji keyboard */
+.emoji-panel{width:min(350px,calc(100vw - 30px));max-width:calc(100% - 16px);padding:10px 11px 8px;border:1px solid #eee8ec;border-radius:19px;background:rgba(255,255,255,.98);box-shadow:0 12px 38px rgba(52,30,42,.18);backdrop-filter:blur(18px);left:8px;bottom:calc(100% + 9px);display:flex;flex-direction:column;gap:9px}
+.emoji-top{display:flex;align-items:center;gap:7px}
+.emoji-search{width:100%;min-width:0;height:34px;padding:0 12px;border:0!important;border-radius:10px!important;background:#f3f2f5!important;color:#302b31;font-size:12px;outline:none}
+.emoji-close{width:29px;height:29px;flex:0 0 29px;border-radius:50%;background:#f2f0f3;color:#777;font-size:21px;line-height:1}
+.emoji-tabs{display:flex;justify-content:space-between;gap:2px;padding-bottom:7px;border-bottom:1px solid #f0edf0}
+.emoji-tabs button{width:34px;height:31px;border-radius:9px;background:transparent;color:#827780;font-size:16px}
+.emoji-tabs button.active{background:#fdeaf1;color:#d65e8b}
+.emoji-grid{height:180px;overflow-y:auto;display:grid;grid-template-columns:repeat(8,minmax(0,1fr));align-content:start;gap:3px;overscroll-behavior:contain}
+.emoji-cell{min-width:0;min-height:37px;padding:2px;border-radius:9px;background:transparent;color:#302b31;font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;font-size:23px;line-height:1.2;overflow:hidden}
+.emoji-cell:hover,.emoji-cell:active{background:#fff0f5}
+.emoji-empty{grid-column:1/-1;padding:28px 8px;text-align:center;color:#ad9ca5;font-size:12px}
+.emoji-footer{padding-top:2px;text-align:center;color:#b3a5ac;font-size:9px;letter-spacing:.3px}
+.emoji-footer span{padding:0 4px;color:#e5a1ba}
+@media(max-width:700px){
+ .emoji-panel{left:7px;bottom:calc(100% + 8px);width:min(350px,calc(100vw - 34px));max-width:calc(100vw - 34px);padding:10px;border-radius:18px}
+ .emoji-grid{height:174px;grid-template-columns:repeat(7,minmax(0,1fr))}
+ .emoji-tabs button{width:32px;height:32px}
+ .emoji-cell{min-height:38px;font-size:24px}
+}
