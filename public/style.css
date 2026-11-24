@@ -208,3 +208,6 @@ body[data-theme="dark"] .post-comment p,body[data-theme="midnight"] .post-commen
   #chatLayout:not(.mobile-chat-open) .people-panel{padding:14px}
   #chatLayout.mobile-chat-open .panel-tabs{display:none}
 }
+
+
+.people-section-title{padding:14px 12px 7px;color:var(--muted);font-size:10px;font-weight:800;letter-spacing:.12em}
