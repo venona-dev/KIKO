@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#fff7fa"><meta name="description" content="KIKO — общайся просто">
-  <title>KIKO — общение без лишнего</title><link rel="stylesheet" href="/style.css?v=20261125-12">
+  <title>KIKO — общение без лишнего</title><link rel="stylesheet" href="/style.css?v=20261125-13">
 </head>
 <body>
   <div id="authView" class="auth-shell">
@@ -20,7 +20,7 @@
     <aside class="sidebar">
       <div class="brand-small">kiko<span>✿</span></div>
       <button class="nav active" data-view="wall"><span>⌂</span> Общая стена</button>
-      <button class="nav" data-view="chats"><span>♡</span> Личные чаты</button><button class="nav" data-view="account"><span>◉</span> Аккаунт</button>
+      <button class="nav" data-view="chats"><span>♡</span> Личные чаты</button><button class="nav" data-view="account"><span>◉</span> Профиль</button>
       <div class="sidebar-bottom"><div class="my-avatar" id="myAvatar">k</div><div class="my-info"><b id="myName"></b><small>в сети</small></div><button id="logout" class="icon-btn" title="Выйти">↗</button></div>
     </aside>
     <main class="main">
@@ -30,11 +30,11 @@
         <div id="feed" class="feed"><div class="empty">Здесь скоро появятся публикации ✿</div></div>
       </section>
       <section id="chatsView" class="content hidden">
-        <div id="chatLayout" class="chat-layout"><div class="people-panel"><div class="panel-brand">kiko<span>✿</span></div><div class="panel-tabs"><button class="panel-tab active" type="button" data-view="wall">⌂ Общая доска</button><button class="panel-tab" type="button" data-view="account">◉ Профиль</button></div><div class="panel-heading">Сообщения</div><input id="userSearch" class="search" placeholder="Найти пользователя…"><div id="peopleList"></div></div>
+        <div id="chatLayout" class="chat-layout"><div class="people-panel"><div class="panel-brand">kiko<span>✿</span></div><div class="panel-tabs"><button class="panel-tab active" type="button" data-view="wall">⌂ Общая стена</button><button class="panel-tab" type="button" data-view="account">◉ Профиль</button></div><div class="panel-heading">Сообщения</div><input id="userSearch" class="search" placeholder="Найти пользователя…"><div id="peopleList"></div></div>
         <div class="conversation"><div id="chatPlaceholder" class="chat-placeholder"><span>♡</span><b>Твои личные разговоры</b><small>Выбери человека, чтобы начать общение</small></div>
         <div id="chatActive" class="hidden chat-active"><div class="chat-head"><button id="mobileChatBack" class="mobile-back" type="button" aria-label="Назад">‹</button><div class="my-avatar pink" id="chatAvatar">?</div><b id="chatName"></b><div class="call-actions"><button id="audioCallButton" type="button" title="Аудиозвонок" aria-label="Аудиозвонок">☎</button><button id="videoCallButton" type="button" title="Видеозвонок" aria-label="Видеозвонок">▣</button></div></div><div id="messages" class="messages"></div><form id="messageForm" class="message-compose"><input id="messageText" maxlength="4000" placeholder="Написать сообщение…" autocomplete="off" required><button id="recordButton" class="tool-btn record-btn" type="button" aria-label="Записать голосовое">🎙</button><button class="primary" type="submit">Отправить</button></form></div></div></div>
       </section>
-      <section id="accountView" class="content hidden"><div class="account-shell"><div class="account-hero"><div id="profileAvatarPreview" class="profile-avatar">K</div><div><h2 id="profileName">Мой аккаунт</h2><p id="profileStatusPreview">Настрой свой профиль</p></div></div><div class="settings-card"><h3>Профиль</h3><label class="setting-row">Аватарка<input id="avatarFile" type="file" accept="image/png,image/jpeg,image/webp"></label><label class="setting-row">Статус<input id="profileStatus" maxlength="80" placeholder="Например: на связи ✨"></label><button id="saveProfile" class="primary full" type="button">Сохранить профиль</button></div><div class="settings-card"><h3>Оформление</h3><label class="setting-row">Тема<select id="themeChoice"><option value="light">Светлая</option><option value="dark">Тёмная</option><option value="lavender">Лавандовая</option><option value="midnight">Ночная</option></select></label><label class="setting-row">Цвет кнопок<select id="accentChoice"><option value="pink">Розовый</option><option value="violet">Фиолетовый</option><option value="blue">Голубой</option><option value="mint">Мятный</option><option value="orange">Персиковый</option></select></label><label class="setting-row">Обои чатов<select id="wallpaperChoice"><option value="soft">Нежные</option><option value="gradient">Градиент</option><option value="grid">Сетка</option><option value="plain">Однотонные</option></select></label><div class="theme-preview" id="themePreview"><span>Предварительный просмотр KIKO</span><div><b>Привет! ♡</b><button type="button" class="preview-button">Кнопка</button></div></div><button id="saveAppearance" class="primary full" type="button">Применить оформление</button></div></div></section>
+      <section id="accountView" class="content hidden"><div class="account-shell"><div class="account-hero"><div id="profileAvatarPreview" class="profile-avatar">K</div><div><h2 id="profileName">Мой профиль</h2><p id="profileStatusPreview">Настрой свой профиль</p></div></div><div class="settings-card"><h3>Профиль</h3><label class="setting-row">Аватарка<input id="avatarFile" type="file" accept="image/png,image/jpeg,image/webp"></label><label class="setting-row">Статус<input id="profileStatus" maxlength="80" placeholder="Например: на связи ✨"></label><button id="saveProfile" class="primary full" type="button">Сохранить профиль</button></div><div class="settings-card"><h3>Оформление</h3><label class="setting-row">Тема<select id="themeChoice"><option value="light">Светлая</option><option value="dark">Тёмная</option><option value="lavender">Лавандовая</option><option value="midnight">Ночная</option></select></label><label class="setting-row">Цвет кнопок<select id="accentChoice"><option value="pink">Розовый</option><option value="violet">Фиолетовый</option><option value="blue">Голубой</option><option value="mint">Мятный</option><option value="orange">Персиковый</option></select></label><label class="setting-row">Обои чатов<select id="wallpaperChoice"><option value="soft">Нежные</option><option value="gradient">Градиент</option><option value="grid">Сетка</option><option value="plain">Однотонные</option></select></label><div class="theme-preview" id="themePreview"><span>Предварительный просмотр KIKO</span><div><b>Привет! ♡</b><button type="button" class="preview-button">Кнопка</button></div></div><button id="saveAppearance" class="primary full" type="button">Применить оформление</button></div></div></section>
     </main>
   </div>
   <section id="callOverlay" class="call-overlay hidden" aria-live="polite">
@@ -46,5 +46,5 @@
     </div>
   </section>
   <div id="toast" class="toast"></div>
-  <script src="/socket.io/socket.io.js"></script><script src="/app.js?v=20261125-12"></script>
+  <script src="/socket.io/socket.io.js"></script><script src="/app.js?v=20261125-13"></script>
 </body></html>
