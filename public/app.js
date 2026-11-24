@@ -96,7 +96,7 @@ const emojiSets={
  object:["📱","💻","📷","🎥","💡","📚","✏️","🖊️","🧷","🪞","🕯️","🛍️","👑","💎","🔑","🗝️","🧿","🪬","☁️","🌙","☀️","⚡","🔥","💧","🌊"],
  kiko:["૮₍ ˶ᵔ ᵕ ᵔ˶ ₎ა","૮꒰ ˶• ༝ •˶꒱ა","꒰ა ♡ ໒꒱","ദ്ദി(˵ •̀ ᴗ - ˵ ) ✧","(づ๑•ᴗ•๑)づ♡","૮ ˶ᵔ ᵕ ᵔ˶ ა","(｡•́‿•̀｡)","( ˶ˆᗜˆ˵ )","(˶˃ ᵕ ˂˶)","♡(˃͈ દ ˂͈ ༶ )","✿","୨୧","₊˚⊹♡","(๑ᵔ⤙ᵔ๑)","(╥﹏╥)","(¬‿¬)","(づ｡◕‿‿◕｡)づ","꒰ঌ(˶ˆᗜˆ˵)໒꒱","૮₍ ˶•⤙•˶ ₎ა","( ˘͈ ᵕ ˘͈♡)"]
 };
-let activeEmojiCategory="recent", recentEmojis=[];
+let activeEmojiCategory="smile", recentEmojis=[];
 try{recentEmojis=JSON.parse(localStorage.getItem("kiko_recent_emojis")||"[]").slice(0,24)}catch{}
 function emojiArtwork(value){
  const faces={
@@ -143,7 +143,7 @@ function insertEmoji(value){
 }
 $("emojiToggle").addEventListener("click",()=>{
  const panel=$("emojiPanel"),opening=panel.classList.contains("hidden");
- panel.classList.toggle("hidden");if(opening){$("emojiSearch").value="";activeEmojiCategory="recent";$("emojiTabs").querySelectorAll("button").forEach(b=>b.classList.toggle("active",b.dataset.category==="recent"));renderEmojiGrid();}
+ panel.classList.toggle("hidden");if(opening){$("emojiSearch").value="";activeEmojiCategory="smile";$("emojiTabs").querySelectorAll("button").forEach(b=>b.classList.toggle("active",b.dataset.category==="smile"));renderEmojiGrid();}
 });
 $("emojiClose").addEventListener("click",()=>$("emojiPanel").classList.add("hidden"));
 $("emojiTabs").addEventListener("click",e=>{
