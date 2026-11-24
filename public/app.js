@@ -13,9 +13,31 @@ function initials(name) { return (name || "?").slice(0,1).toUpperCase(); }
 function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c])); }
 function time(value) { return new Date(value).toLocaleString("ru-RU", { day:"numeric", month:"short", hour:"2-digit", minute:"2-digit" }); }
 function logout() { finishCall(false); localStorage.removeItem("kiko_token"); token = null; me = null; if(socket) socket.disconnect(); $("appView").classList.add("hidden"); $("authView").classList.remove("hidden"); }
+async function loadProfile(){
+ try{const p=await api("/api/profile");me={...me,...p};$("profileName").textContent=me.username;$("profileStatus").value=me.status||"";$("profileStatusPreview").textContent=me.status||"Настрой свой профиль";$("themeChoice").value=me.theme||"light";$("accentChoice").value=me.accent||"pink";$("wallpaperChoice").value=me.wallpaper||"soft";paintProfileAvatar();applyAppearance();}catch(e){toast(e.message);}
+}
+function paintProfileAvatar(){
+ [$("myAvatar"),$("postAvatar"),$("profileAvatarPreview")].forEach(el=>{if(!el)return;el.textContent=me.avatar_data?"":initials(me.username);el.style.backgroundImage=me.avatar_data?'url("data:image/jpeg;base64,'+me.avatar_data+'")':"";el.classList.toggle("has-photo",!!me.avatar_data);});
+}
+function applyAppearance(){
+ const colors={pink:"#d66f98",violet:"#9275d8",blue:"#5b9bd5",mint:"#48a98e",orange:"#e69a69"};
+ document.documentElement.style.setProperty("--accent",colors[me.accent]||colors.pink);
+ document.body.dataset.theme=me.theme||"light";document.body.dataset.wallpaper=me.wallpaper||"soft";
+ const preview=$("themePreview");if(preview){preview.dataset.theme=me.theme||"light";preview.dataset.wallpaper=me.wallpaper||"soft";preview.style.setProperty("--accent",colors[me.accent]||colors.pink);}
+}
+$("saveProfile").onclick=async()=>{
+ const file=$("avatarFile").files[0];let avatar_data=me.avatar_data||null;
+ if(file){if(file.size>1500000){toast("Аватарка должна быть меньше 1,5 МБ");return;}avatar_data=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(String(r.result).split(",")[1]);r.onerror=reject;r.readAsDataURL(file);});}
+ try{const p=await api("/api/profile",{method:"PUT",body:JSON.stringify({status:$("profileStatus").value,avatar_data})});me={...me,...p};$("avatarFile").value="";paintProfileAvatar();$("profileStatusPreview").textContent=me.status||"Настрой свой профиль";toast("Профиль сохранён");}catch(e){toast(e.message);}
+};
+$("saveAppearance").onclick=async()=>{
+ try{const p=await api("/api/profile",{method:"PUT",body:JSON.stringify({theme:$("themeChoice").value,accent:$("accentChoice").value,wallpaper:$("wallpaperChoice").value})});me={...me,...p};applyAppearance();toast("Оформление применено");}catch(e){toast(e.message);}
+};
+["themeChoice","accentChoice","wallpaperChoice"].forEach(id=>$(id).addEventListener("change",()=>{const old=me;me={...me,theme:$("themeChoice").value,accent:$("accentChoice").value,wallpaper:$("wallpaperChoice").value};applyAppearance();me=old;}));
+
 function showApp() {
   $("authView").classList.add("hidden"); $("appView").classList.remove("hidden");
-  $("myName").textContent = me.username; $("myAvatar").textContent = initials(me.username); $("postAvatar").textContent = initials(me.username);
+  $("myName").textContent = me.username; paintProfileAvatar(); applyAppearance();
   socket = io({ auth: { token } });
   socket.on("connect_error", err => toast("Связь с сервером прервана. Переподключаемся…"));
   socket.on("call:signal", handleCallSignal);
@@ -51,7 +73,7 @@ $("postForm").addEventListener("submit", async e => { e.preventDefault(); const 
 document.querySelectorAll(".nav").forEach(btn => btn.onclick = () => {
   const chats=btn.dataset.view==="chats"; document.querySelectorAll(".nav").forEach(b=>b.classList.toggle("active",b===btn));
   $("wallView").classList.toggle("hidden",chats); $("chatsView").classList.toggle("hidden",!chats);
-  $("pageTitle").textContent=chats?"Личные чаты":"Общая стена"; if(chats) loadPeople();
+  const account=btn.dataset.view==="account"; $("wallView").classList.toggle("hidden",chats||account); $("chatsView").classList.toggle("hidden",!chats); $("accountView").classList.toggle("hidden",!account); $("pageTitle").textContent=account?"Аккаунт":chats?"Личные чаты":"Общая стена"; if(chats) loadPeople(); if(account) loadProfile();
 });
 async function loadPeople(q="") {
   try { knownPeople=await api("/api/users?q="+encodeURIComponent(q)); renderPeople(); } catch(e){toast(e.message);}
@@ -127,8 +149,8 @@ $("messageForm").addEventListener("submit",e=>{
 
 const rtcConfig={iceServers:[{urls:"stun:stun.l.google.com:19302"}]};
 function setCallStatus(text){$("callStatus").textContent=text;}
-function showCallOverlay(){ $("callOverlay").classList.remove("hidden"); }
-function hideCallOverlay(){ $("callOverlay").classList.add("hidden"); }
+function showCallOverlay(){ $("callOverlay").classList.add("fullscreen-call"); if(callMode==="video") $("callOverlay").classList.add("video-call"); else $("callOverlay").classList.remove("video-call"); $("callOverlay").classList.remove("hidden"); }
+function hideCallOverlay(){ $("callOverlay").classList.add("hidden"); $("callOverlay").classList.remove("fullscreen-call","video-call"); }
 async function startCall(mode){
   if(!activePerson||!socket)return toast("Сначала открой личный чат");
   if(peerConnection)return toast("Звонок уже идёт");
@@ -137,7 +159,7 @@ async function startCall(mode){
     if(!navigator.mediaDevices?.getUserMedia)throw new Error("Для звонков нужен доступ к камере и микрофону по HTTPS");
     localCallStream=await navigator.mediaDevices.getUserMedia({audio:true,video:mode==="video"});
     remoteCallStream=new MediaStream();
-    $("localVideo").srcObject=localCallStream;$("remoteVideo").srcObject=remoteCallStream;
+    $("localVideo").srcObject=localCallStream;$("localVideo").style.transform="scaleX(-1)";$("remoteVideo").style.transform="none";$("remoteVideo").srcObject=remoteCallStream;
     $("remoteVideo").classList.toggle("audio-only",mode==="audio");
     $("localVideo").classList.toggle("hidden",mode==="audio");
     $("remoteAudio").srcObject=remoteCallStream;
@@ -172,7 +194,7 @@ async function acceptCall(){
   const offer=incomingOffer;incomingOffer=null;
   try{
     localCallStream=await navigator.mediaDevices.getUserMedia({audio:true,video:callMode==="video"});
-    remoteCallStream=new MediaStream();$("localVideo").srcObject=localCallStream;$("remoteVideo").srcObject=remoteCallStream;$("remoteAudio").srcObject=remoteCallStream;
+    remoteCallStream=new MediaStream();$("localVideo").srcObject=localCallStream;$("localVideo").style.transform="scaleX(-1)";$("remoteVideo").style.transform="none";$("remoteVideo").srcObject=remoteCallStream;$("remoteAudio").srcObject=remoteCallStream;
     $("localVideo").classList.toggle("hidden",callMode==="audio");$("remoteVideo").classList.toggle("audio-only",callMode==="audio");
     $("callMedia").classList.remove("hidden");$("incomingCallActions").classList.add("hidden");$("activeCallActions").classList.remove("hidden");$("toggleCamera").classList.toggle("hidden",callMode==="audio");
     peerConnection=new RTCPeerConnection(rtcConfig);
