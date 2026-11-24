@@ -98,6 +98,31 @@ const emojiSets={
 };
 let activeEmojiCategory="recent", recentEmojis=[];
 try{recentEmojis=JSON.parse(localStorage.getItem("kiko_recent_emojis")||"[]").slice(0,24)}catch{}
+function emojiArtwork(value){
+ const faces={
+  "😀":["M14 21 Q24 34 34 21","M15 15h.1 M33 15h.1"],
+  "😃":["M12 20 Q24 38 36 20","M15 14 Q17 11 19 14 M29 14 Q31 11 33 14"],
+  "😄":["M11 19 Q24 40 37 19","M14 13 Q17 9 20 13 M28 13 Q31 9 34 13"],
+  "😁":["M11 19 Q24 38 37 19 L35 27 Q24 34 13 27Z","M14 13 Q17 10 20 13 M28 13 Q31 10 34 13"],
+  "😆":["M11 18 Q24 40 37 18 L35 29 Q24 36 13 29Z","M13 14 Q17 9 21 14 M27 14 Q31 9 35 14"],
+  "😂":["M12 20 Q24 35 36 20","M14 14h.1 M32 14h.1"],
+  "🤣":["M11 20 Q24 37 37 20","M14 14h.1 M32 14h.1"],
+  "🥰":["M13 15 Q17 10 21 15 M27 15 Q31 10 35 15","M16 25 Q24 33 32 25"],
+  "😍":["M13 15 Q17 10 21 15 M27 15 Q31 10 35 15","M16 25 Q24 33 32 25"],
+  "😘":["M14 15h.1 M32 15h.1","M19 25 Q25 29 31 23"],
+  "😊":["M14 15h.1 M32 15h.1","M15 22 Q24 33 33 22"],
+  "😎":["M10 16h14l-1 7h-11z M26 16h14l-2 7h-11z","M20 29 Q24 31 28 29"],
+  "🥳":["M14 15h.1 M32 15h.1","M15 22 Q24 34 33 22"],
+  "😢":["M14 15h.1 M32 15h.1","M18 29 Q24 23 30 29"],
+  "😭":["M14 15h.1 M32 15h.1","M17 29 Q24 21 31 29"],
+  "😡":["M13 16l7 2 M35 16l-7 2","M17 30 Q24 24 31 30"],
+  "😱":["M14 14h.1 M32 14h.1","M20 23 Q24 35 28 23Z"],
+  "🥺":["M14 16h.1 M32 16h.1","M19 29 Q24 26 29 29"]
+ };
+ const f=faces[value]; if(!f)return null;
+ const svg='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><defs><radialGradient id="g" cx="32%" cy="22%" r="76%"><stop stop-color="#fff9c9"/><stop offset=".35" stop-color="#ffe36a"/><stop offset=".78" stop-color="#ffb91f"/><stop offset="1" stop-color="#e88908"/></radialGradient><linearGradient id="s" x2="0" y2="1"><stop stop-color="#fff" stop-opacity=".72"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><filter id="d" x="-30%" y="-30%" width="160%" height="170%"><feGaussianBlur stdDeviation="1.6"/></filter></defs><ellipse cx="25" cy="44" rx="15" ry="2.5" fill="#9b641b" opacity=".2" filter="url(#d)"/><circle cx="24" cy="23" r="20" fill="#d88712" opacity=".28"/><circle cx="24" cy="22" r="19" fill="url(#g)" stroke="#e69a17" stroke-width=".7"/><ellipse cx="17" cy="10" rx="12" ry="5" fill="url(#s)" opacity=".8"/><path d="'+f[0]+'" stroke="#633b20" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="'+f[1]+'" stroke="#633b20" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/><ellipse cx="13" cy="25" rx="3.5" ry="2" fill="#f27b58" opacity=".35"/><ellipse cx="35" cy="25" rx="3.5" ry="2" fill="#f27b58" opacity=".35"/></svg>';
+ return "data:image/svg+xml;charset=utf-8,"+encodeURIComponent(svg);
+}
 function renderEmojiGrid(){
  const grid=$("emojiGrid"), query=$("emojiSearch").value.trim().toLowerCase();
  grid.innerHTML="";
@@ -105,7 +130,7 @@ function renderEmojiGrid(){
  if(query) values=Object.values(emojiSets).flat().filter(v=>v.toLowerCase().includes(query));
  if(!values.length){grid.innerHTML='<div class="emoji-empty">Найди свой смайл ✿</div>';return;}
  values.forEach(value=>{
-  const btn=document.createElement("button");btn.type="button";btn.className="emoji-cell";btn.textContent=value;btn.title=value;btn.addEventListener("click",()=>insertEmoji(value));grid.append(btn);
+  const btn=document.createElement("button");btn.type="button";btn.className="emoji-cell";btn.title=value;const artwork=emojiArtwork(value);if(artwork){const img=document.createElement("img");img.className="emoji-artwork";img.src=artwork;img.alt=value;btn.append(img);}else{btn.textContent=value;}btn.addEventListener("click",()=>insertEmoji(value));grid.append(btn);
  });
 }
 function insertEmoji(value){
