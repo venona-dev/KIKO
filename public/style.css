@@ -93,3 +93,9 @@
 .message-compose .tool-btn{border-radius:13px;background:#f0eaf0;color:#78627c}
 .message-compose .tool-btn:hover{background:#e7dce9}
 @media(max-width:700px){.emoji-panel{padding:11px}.emoji-grid{height:178px}.emoji-tabs button{width:30px;flex-basis:30px}}
+
+/* Original glossy 3D-style artwork for KIKO face emojis */
+.emoji-cell{display:flex;align-items:center;justify-content:center}
+.emoji-cell .emoji-artwork{display:block;width:34px;height:34px;object-fit:contain;filter:drop-shadow(0 2px 1px rgba(120,75,25,.16));transition:transform .14s ease}
+.emoji-cell:hover .emoji-artwork{transform:translateY(-1px) scale(1.08)}
+.emoji-cell:active .emoji-artwork{transform:scale(.94)}
