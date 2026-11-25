@@ -78,6 +78,7 @@
     if(logo&&!logo.dataset.achievementClick){logo.dataset.achievementClick="1";logo.style.cursor="pointer";logo.title="Нажми, чтобы получить достижение";logo.addEventListener("click",()=>track("logo_click"));}
     if(current)render();
   }
-  document.addEventListener("DOMContentLoaded",()=>{install();refresh();const mo=new MutationObserver(install);mo.observe(document.body,{childList:true,subtree:true});});
+  document.addEventListener("DOMContentLoaded",()=>{install();refresh();});
+  document.addEventListener("kiko:avatar-painted",paintBadges);
   document.addEventListener("kiko:achievement-refresh",refresh);
 })();
