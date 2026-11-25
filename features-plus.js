@@ -84,7 +84,7 @@ module.exports = function installKikoPlus({ app, io, pool, auth }) {
       const c=await pool.connect();
       try {
         await c.query("BEGIN");
-        const due=await c.query("SELECT * FROM scheduled_messages WHERE send_at<=NOW() ORDER BY send_at FOR UPDATE SKIP LOCKED LIMIT 50");
+        const due=await c.query("SELECT * FROM scheduled_messages WHERE send_at<=NOW() ORDER BY send_at LIMIT 50 FOR UPDATE SKIP LOCKED");
         for(const m of due.rows){
           const blocked=await c.query("SELECT 1 FROM user_blocks WHERE (blocker_id=$1 AND blocked_id=$2) OR (blocker_id=$2 AND blocked_id=$1)",[m.sender_id,m.recipient_id]);
           if(!blocked.rowCount){
