@@ -988,3 +988,99 @@ body[data-theme="midnight"] .sidebar{
       linear-gradient(90deg,#08080b 0%,#160b14 58%,#210d1a 100%)!important;
   }
 }
+
+
+/* Appearance split: dark themes keep the established black/pink look;
+   light appearance restores the original pearl-white sidebar with pink ornaments. */
+body:not([data-theme="dark"]):not([data-theme="midnight"]) #appView .sidebar{
+  background-color:#fff9fc!important;
+  background-image:
+    radial-gradient(ellipse at 18% 4%,rgba(255,255,255,.98) 0%,rgba(255,255,255,0) 34%),
+    radial-gradient(ellipse at 92% 18%,rgba(255,255,255,.82) 0%,rgba(255,255,255,0) 25%),
+    radial-gradient(ellipse at 84% 76%,rgba(244,166,198,.30) 0%,rgba(244,166,198,0) 36%),
+    radial-gradient(ellipse at 8% 94%,rgba(255,255,255,.88) 0%,rgba(255,255,255,0) 32%),
+    linear-gradient(132deg,#fff 0%,#fff9fc 28%,#fbe7f0 66%,#fff2f8 100%)!important;
+  color:#765766!important;border-right:1px solid rgba(226,160,188,.42)!important;
+  box-shadow:inset -1px 0 0 rgba(222,151,180,.2),inset 0 1px 0 #fff,8px 0 24px rgba(219,153,180,.08)!important;
+}
+body:not([data-theme="dark"]):not([data-theme="midnight"]) #appView .sidebar::before,
+body:not([data-theme="dark"]):not([data-theme="midnight"]) #appView .sidebar::after{
+  display:block!important;content:""!important;position:absolute!important;z-index:0!important;
+  pointer-events:none!important;
+}
+body:not([data-theme="dark"]):not([data-theme="midnight"]) #appView .sidebar::before{
+  top:62px;right:5px;bottom:62px;width:78px;opacity:.86;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 78 700' preserveAspectRatio='none'%3E%3Cpath d='M10 0 C70 95 69 155 25 245 S0 380 49 465 S72 580 7 700' fill='none' stroke='%23e98db5' stroke-width='1.45' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat 100% 0/100% 100%!important;
+  filter:drop-shadow(1px 1px 0 rgba(255,255,255,.98)) drop-shadow(0 0 5px rgba(255,255,255,.9))!important;
+}
+body:not([data-theme="dark"]):not([data-theme="midnight"]) #appView .sidebar::after{
+  top:8px;right:7px;bottom:8px;width:58px;opacity:.92;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='108' viewBox='0 0 56 108'%3E%3Cpath d='M12 7 L14 13 L20 15 L14 17 L12 23 L10 17 L4 15 L10 13 Z M43 42 L44.5 46.5 L49 48 L44.5 49.5 L43 54 L41.5 49.5 L37 48 L41.5 46.5 Z M18 81 L19 84 L22 85 L19 86 L18 89 L17 86 L14 85 L17 84 Z' fill='%23e98db5'/%3E%3C/svg%3E") repeat-y 100% 0/56px 108px!important;
+  filter:drop-shadow(1px 1px 0 #fff) drop-shadow(0 0 7px rgba(231,126,171,.35))!important;
+}
+body:not([data-theme="dark"]):not([data-theme="midnight"]) #appView .sidebar>*{position:relative;z-index:2}
+body:not([data-theme="dark"]):not([data-theme="midnight"]) #appView .sidebar .brand-small{color:#d66f98!important}
+body:not([data-theme="dark"]):not([data-theme="midnight"]) #appView .sidebar .nav,
+body:not([data-theme="dark"]):not([data-theme="midnight"]) #appView .sidebar .nav span{color:#8d687a!important}
+body:not([data-theme="dark"]):not([data-theme="midnight"]) #appView .sidebar .nav:hover,
+body:not([data-theme="dark"]):not([data-theme="midnight"]) #appView .sidebar .nav.active{
+  color:#bd527f!important;background:linear-gradient(145deg,#fff,#ffe6f0)!important;
+  border-color:#f0bfd2!important;box-shadow:inset 3px 0 #df7da4,0 4px 14px rgba(213,111,153,.12)!important;
+}
+body:not([data-theme="dark"]):not([data-theme="midnight"]) #appView .sidebar .sidebar-bottom{
+  color:#8d687a!important;border-top:1px solid #f0d5e1!important;background:transparent!important;
+}
+body:not([data-theme="dark"]):not([data-theme="midnight"]) #appView .sidebar .my-avatar{
+  background:#ffe5ef!important;color:#c65f88!important;border:1px solid #efbfd2!important;
+}
+
+/* Private-message contacts panel: same light pearl finish and pink line/star pattern. */
+body:not([data-theme="dark"]):not([data-theme="midnight"]) #appView #chatLayout .people-panel{
+  background-color:#fff9fc!important;
+  background-image:
+    radial-gradient(ellipse at 18% 4%,rgba(255,255,255,.98) 0%,rgba(255,255,255,0) 34%),
+    radial-gradient(ellipse at 92% 18%,rgba(255,255,255,.82) 0%,rgba(255,255,255,0) 25%),
+    radial-gradient(ellipse at 84% 76%,rgba(244,166,198,.30) 0%,rgba(244,166,198,0) 36%),
+    radial-gradient(ellipse at 8% 94%,rgba(255,255,255,.88) 0%,rgba(255,255,255,0) 32%),
+    linear-gradient(132deg,#fff 0%,#fff9fc 28%,#fbe7f0 66%,#fff2f8 100%)!important;
+  color:#765766!important;border-right:1px solid rgba(226,160,188,.42)!important;
+  box-shadow:inset -1px 0 0 rgba(222,151,180,.2),inset 0 1px 0 #fff!important;
+}
+body:not([data-theme="dark"]):not([data-theme="midnight"]) #appView #chatLayout .people-panel::before,
+body:not([data-theme="dark"]):not([data-theme="midnight"]) #appView #chatLayout .people-panel::after{
+  display:block!important;content:""!important;position:absolute!important;z-index:0!important;pointer-events:none!important;
+}
+body:not([data-theme="dark"]):not([data-theme="midnight"]) #appView #chatLayout .people-panel::before{
+  top:68px;right:5px;bottom:58px;width:82px;opacity:.86;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 82 700' preserveAspectRatio='none'%3E%3Cpath d='M12 0 C78 92 72 150 27 235 S-1 370 52 455 S77 570 8 700' fill='none' stroke='%23efa0c1' stroke-width='1.35' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat 100% 0/100% 100%!important;
+}
+body:not([data-theme="dark"]):not([data-theme="midnight"]) #appView #chatLayout .people-panel::after{
+  top:8px;right:7px;bottom:8px;width:62px;opacity:.92;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='58' height='112' viewBox='0 0 58 112'%3E%3Cpath d='M12 7 L14 13 L20 15 L14 17 L12 23 L10 17 L4 15 L10 13 Z M43 43 L44.5 47.5 L49 49 L44.5 50.5 L43 55 L41.5 50.5 L37 49 L41.5 47.5 Z M19 83 L20 86 L23 87 L20 88 L19 91 L18 88 L15 87 L18 86 Z' fill='%23e98db5'/%3E%3C/svg%3E") repeat-y 100% 0/58px 112px!important;
+}
+body:not([data-theme="dark"]):not([data-theme="midnight"]) #appView #chatLayout .people-panel>*{position:relative;z-index:2}
+body:not([data-theme="dark"]):not([data-theme="midnight"]) #appView #chatLayout .people-panel .panel-tab{
+  background:#fff7fa!important;color:#9a7b89!important;border-color:#f3dce6!important;
+}
+body:not([data-theme="dark"]):not([data-theme="midnight"]) #appView #chatLayout .people-panel .panel-tab.active,
+body:not([data-theme="dark"]):not([data-theme="midnight"]) #appView #chatLayout .people-panel .panel-tab:hover{
+  background:linear-gradient(145deg,#fff,#ffe2ee)!important;color:#c65f88!important;
+  border-color:#efbfd2!important;box-shadow:inset 0 1px 0 #fff,0 4px 14px rgba(213,111,153,.15)!important;
+}
+body:not([data-theme="dark"]):not([data-theme="midnight"]) #appView #chatLayout .people-panel .search,
+body:not([data-theme="dark"]):not([data-theme="midnight"]) #appView #chatLayout .people-panel input{
+  background:rgba(255,255,255,.82)!important;color:#765766!important;border-color:#e7b9cc!important;
+}
+body:not([data-theme="dark"]):not([data-theme="midnight"]) #appView #chatLayout .people-panel .search::placeholder,
+body:not([data-theme="dark"]):not([data-theme="midnight"]) #appView #chatLayout .people-panel input::placeholder{color:#a88a99!important}
+body:not([data-theme="dark"]):not([data-theme="midnight"]) #appView #chatLayout .people-panel .person{color:#765766!important}
+body:not([data-theme="dark"]):not([data-theme="dark"]) #appView #chatLayout .people-panel .person small{color:#a88a99!important}
+body:not([data-theme="dark"]):not([data-theme="midnight"]) #appView #chatLayout .people-panel .person:hover,
+body:not([data-theme="dark"]):not([data-theme="midnight"]) #appView #chatLayout .people-panel .person.active{
+  color:#bd527f!important;background:linear-gradient(100deg,#fff0f6,#ffe3ee)!important;
+  border-color:#f0bfd2!important;box-shadow:inset 3px 0 #df7da4!important;
+}
+@media(max-width:700px){
+  body:not([data-theme="dark"]):not([data-theme="midnight"]) #appView .sidebar::before,
+  body:not([data-theme="dark"]):not([data-theme="midnight"]) #appView .sidebar::after{display:none!important}
+}
