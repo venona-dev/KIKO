@@ -19,6 +19,23 @@ module.exports = function installKikoFeatures({ app, io, pool, auth }) {
     CREATE TABLE IF NOT EXISTS group_messages(id SERIAL PRIMARY KEY,group_id INTEGER NOT NULL REFERENCES groups_chat(id) ON DELETE CASCADE,sender_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,body VARCHAR(4000) NOT NULL DEFAULT '',attachment_data BYTEA,attachment_name VARCHAR(180),attachment_mime VARCHAR(100),reply_to INTEGER REFERENCES group_messages(id) ON DELETE SET NULL,edited_at TIMESTAMPTZ,deleted_at TIMESTAMPTZ,pinned BOOLEAN NOT NULL DEFAULT FALSE,created_at TIMESTAMPTZ DEFAULT NOW());
     CREATE INDEX IF NOT EXISTS group_messages_idx ON group_messages(group_id,created_at DESC);
     CREATE TABLE IF NOT EXISTS stories(id SERIAL PRIMARY KEY,user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,body VARCHAR(500) NOT NULL DEFAULT '',media_data TEXT,media_mime VARCHAR(100),created_at TIMESTAMPTZ DEFAULT NOW(),expires_at TIMESTAMPTZ NOT NULL DEFAULT NOW()+INTERVAL '24 hours');
+    CREATE TABLE IF NOT EXISTS user_friends (
+      user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      friend_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      PRIMARY KEY(user_id,friend_id),
+      CHECK(user_id<>friend_id)
+    );
+    CREATE TABLE IF NOT EXISTS friend_requests (
+      id SERIAL PRIMARY KEY,
+      sender_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      recipient_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      status VARCHAR(12) NOT NULL DEFAULT 'pending' CHECK(status IN ('pending','accepted','declined')),
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      UNIQUE(sender_id,recipient_id),
+      CHECK(sender_id<>recipient_id)
+    );
+    CREATE INDEX IF NOT EXISTS friend_requests_recipient_idx ON friend_requests(recipient_id,status,created_at DESC);
     CREATE TABLE IF NOT EXISTS user_blocks(blocker_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,blocked_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,created_at TIMESTAMPTZ DEFAULT NOW(),PRIMARY KEY(blocker_id,blocked_id),CHECK(blocker_id<>blocked_id));
     CREATE TABLE IF NOT EXISTS user_reports(id SERIAL PRIMARY KEY,reporter_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,reported_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,reason VARCHAR(500) NOT NULL,created_at TIMESTAMPTZ DEFAULT NOW());
     CREATE TABLE IF NOT EXISTS user_privacy(user_id INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,last_seen VARCHAR(12) NOT NULL DEFAULT 'everyone',profile_visibility VARCHAR(12) NOT NULL DEFAULT 'everyone',read_receipts BOOLEAN NOT NULL DEFAULT TRUE,typing_status BOOLEAN NOT NULL DEFAULT TRUE);
@@ -102,6 +119,47 @@ module.exports = function installKikoFeatures({ app, io, pool, auth }) {
   app.post("/api/features/report/:userId",auth,safe(async(req,res)=>{
     const id=Number(req.params.userId),reason=String(req.body.reason||"").trim().slice(0,500);if(!id||id===req.user.id||!reason)return res.status(400).json({error:"Укажи причину жалобы"});
     await pool.query("INSERT INTO user_reports(reporter_id,reported_id,reason) VALUES($1,$2,$3)",[req.user.id,id,reason]);res.status(201).json({ok:true});
+  }));
+  app.get("/api/friends",auth,safe(async(req,res)=>{
+    const r=await pool.query(`SELECT u.id,u.username,u.status,u.avatar_data,uf.created_at AS friend_since
+      FROM user_friends uf JOIN users u ON u.id=uf.friend_id WHERE uf.user_id=$1 ORDER BY u.username`,[req.user.id]);res.json(r.rows);
+  }));
+  app.get("/api/friends/requests",auth,safe(async(req,res)=>{
+    const r=await pool.query(`SELECT fr.id,fr.sender_id,fr.recipient_id,fr.created_at,u.username,u.status AS user_status,u.avatar_data
+      FROM friend_requests fr JOIN users u ON u.id=fr.sender_id
+      WHERE fr.recipient_id=$1 AND fr.status='pending' ORDER BY fr.created_at DESC`,[req.user.id]);res.json(r.rows);
+  }));
+  app.get("/api/users/:id/profile",auth,safe(async(req,res)=>{
+    const id=Number(req.params.id);if(!Number.isInteger(id)||id<1)return res.status(400).json({error:"Некорректный пользователь"});
+    const user=await pool.query("SELECT id,username,status,avatar_data,created_at FROM users WHERE id=$1",[id]);if(!user.rowCount)return res.status(404).json({error:"Пользователь не найден"});
+    if(id===req.user.id)return res.json({...user.rows[0],is_me:true,friend_status:"self",posts:[]});
+    const blocked=await pool.query("SELECT 1 FROM user_blocks WHERE (blocker_id=$1 AND blocked_id=$2) OR (blocker_id=$2 AND blocked_id=$1)",[req.user.id,id]);if(blocked.rowCount)return res.status(404).json({error:"Профиль недоступен"});
+    const friendship=await pool.query("SELECT 1 FROM user_friends WHERE user_id=$1 AND friend_id=$2",[req.user.id,id]);
+    const privacy=await pool.query("SELECT profile_visibility FROM user_privacy WHERE user_id=$1",[id]);
+    if(privacy.rows[0]?.profile_visibility==="nobody"||(privacy.rows[0]?.profile_visibility==="contacts"&&!friendship.rowCount))return res.status(403).json({error:"Этот пользователь скрыл свой профиль"});
+    const request=await pool.query("SELECT sender_id,status FROM friend_requests WHERE (sender_id=$1 AND recipient_id=$2) OR (sender_id=$2 AND recipient_id=$1) ORDER BY created_at DESC LIMIT 1",[req.user.id,id]);
+    const posts=await pool.query(`SELECT p.id,p.body,p.created_at,COUNT(l.user_id)::int AS likes,
+      EXISTS(SELECT 1 FROM likes l2 WHERE l2.post_id=p.id AND l2.user_id=$2) AS liked,
+      (SELECT COUNT(*)::int FROM post_comments pc WHERE pc.post_id=p.id) AS comments_count
+      FROM posts p LEFT JOIN likes l ON l.post_id=p.id WHERE p.user_id=$1 GROUP BY p.id ORDER BY p.created_at DESC LIMIT 30`,[id,req.user.id]);
+    const fr=request.rows[0];const status=friendship.rowCount?"friends":fr?.status==="pending"?(fr.sender_id===req.user.id?"sent":"received"):"none";
+    res.json({...user.rows[0],is_me:false,friend_status:status,posts:posts.rows});
+  }));
+  app.post("/api/friends/request/:userId",auth,safe(async(req,res)=>{
+    const id=Number(req.params.userId);if(!Number.isInteger(id)||id<1||id===req.user.id)return res.status(400).json({error:"Некорректный пользователь"});
+    const target=await pool.query("SELECT id FROM users WHERE id=$1",[id]);if(!target.rowCount)return res.status(404).json({error:"Пользователь не найден"});
+    const blocked=await pool.query("SELECT 1 FROM user_blocks WHERE (blocker_id=$1 AND blocked_id=$2) OR (blocker_id=$2 AND blocked_id=$1)",[req.user.id,id]);if(blocked.rowCount)return res.status(403).json({error:"Нельзя отправить запрос этому пользователю"});
+    const existing=await pool.query("SELECT sender_id,status FROM friend_requests WHERE (sender_id=$1 AND recipient_id=$2) OR (sender_id=$2 AND recipient_id=$1) ORDER BY created_at DESC LIMIT 1",[req.user.id,id]);
+    if(existing.rows[0]?.status==="pending")return res.status(409).json({error:"Запрос уже существует"});
+    if(existing.rows[0]?.status==="accepted")return res.status(409).json({error:"Вы уже друзья"});
+    await pool.query("INSERT INTO friend_requests(sender_id,recipient_id,status) VALUES($1,$2,'pending') ON CONFLICT(sender_id,recipient_id) DO UPDATE SET status='pending',created_at=NOW()",[req.user.id,id]);
+    io.to("user:"+id).emit("friend:request",{from:req.user.id,username:req.user.username});res.status(201).json({ok:true,status:"sent"});
+  }));
+  app.post("/api/friends/requests/:requestId/accept",auth,safe(async(req,res)=>{
+    const id=Number(req.params.requestId),c=await pool.connect();try{await c.query("BEGIN");const r=await c.query("SELECT * FROM friend_requests WHERE id=$1 AND recipient_id=$2 AND status='pending' FOR UPDATE",[id,req.user.id]);if(!r.rowCount){await c.query("ROLLBACK");return res.status(404).json({error:"Запрос не найден"});}const from=r.rows[0].sender_id,to=r.rows[0].recipient_id;await c.query("UPDATE friend_requests SET status='accepted' WHERE id=$1",[id]);await c.query("INSERT INTO user_friends(user_id,friend_id) VALUES($1,$2),($2,$1) ON CONFLICT DO NOTHING",[from,to]);await c.query("COMMIT");io.to("user:"+from).to("user:"+to).emit("friend:accepted",{userId:from===req.user.id?to:from});res.json({ok:true});}catch(e){await c.query("ROLLBACK");throw e;}finally{c.release();}
+  }));
+  app.delete("/api/friends/:userId",auth,safe(async(req,res)=>{
+    const id=Number(req.params.userId);await pool.query("DELETE FROM user_friends WHERE (user_id=$1 AND friend_id=$2) OR (user_id=$2 AND friend_id=$1)",[req.user.id,id]);await pool.query("UPDATE friend_requests SET status='declined' WHERE (sender_id=$1 AND recipient_id=$2 OR sender_id=$2 AND recipient_id=$1) AND status='accepted'",[req.user.id,id]);res.json({ok:true});
   }));
   app.get("/api/features/groups",auth,safe(async(req,res)=>{
     const r=await pool.query(`SELECT g.id,g.name,g.description,g.created_at,gm.role,
