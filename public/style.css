@@ -635,3 +635,23 @@ body[data-theme="dark"] .sidebar,body[data-theme="midnight"] .sidebar{color:var(
   #chatLayout.mobile-chat-open #messageForm #recordButton{right:50px;width:30px;height:30px}
   #chatLayout.mobile-chat-open #messageForm button.primary{right:11px;width:30px;min-width:30px;height:30px}
 }
+
+
+/* Compact mobile chat header with an overflow menu; calls stay visible beside it. */
+.kiko-chat-more-trigger{flex:0 0 38px;width:38px;height:38px;border:0;border-radius:11px;background:var(--surface-2,#f8edf2);color:var(--ink,#765365);font-size:26px;line-height:1;display:flex;align-items:center;justify-content:center}
+.kiko-chat-menu{position:absolute;z-index:80;right:10px;top:calc(100% - 2px);width:min(260px,calc(100vw - 28px));max-height:min(70dvh,480px);overflow:auto;padding:7px;background:var(--surface,#fff);border:1px solid var(--line,#eadde5);border-radius:14px;box-shadow:0 12px 35px #0002;display:grid;gap:3px}
+.kiko-chat-menu.hidden{display:none!important}
+.kiko-chat-menu-item{display:block;width:100%;min-height:40px;padding:9px 12px;text-align:left;border:0;border-radius:9px;background:transparent;color:var(--ink,#765365);font-size:13px}
+.kiko-chat-menu-item:hover{background:var(--surface-2,#f8edf2)}
+.chat-head{position:relative}
+@media(max-width:700px){
+  #chatLayout.mobile-chat-open .chat-head{box-sizing:border-box;width:100%;min-width:0;height:62px;min-height:62px;flex:0 0 62px;padding:7px 9px;gap:7px;display:flex;align-items:center;overflow:visible}
+  #chatLayout.mobile-chat-open #chatName{min-width:0;max-width:none;flex:1 1 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px}
+  #chatLayout.mobile-chat-open .chat-head .call-actions{display:flex!important;flex:0 0 auto;gap:5px;margin-left:auto}
+  #chatLayout.mobile-chat-open .chat-head .call-actions button{display:flex!important;flex:0 0 34px;width:34px;height:34px;min-width:34px;align-items:center;justify-content:center;padding:0;border-radius:10px}
+  #chatLayout.mobile-chat-open #kikoChatMoreTrigger{flex:0 0 36px;width:36px;height:36px}
+  #chatLayout.mobile-chat-open #kikoUserSafety{display:none!important}
+  #chatLayout.mobile-chat-open .kiko-chat-menu{right:8px;top:calc(100% + 2px)}
+}
+body[data-theme="dark"] .kiko-chat-menu,body[data-theme="midnight"] .kiko-chat-menu{background:var(--surface);border-color:var(--line)}
+body[data-theme="dark"] .kiko-chat-menu-item,body[data-theme="midnight"] .kiko-chat-menu-item{color:var(--ink)}
