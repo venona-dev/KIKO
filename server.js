@@ -8,6 +8,7 @@ const { Pool } = require("pg");
 const { Server } = require("socket.io");
 const installKikoFeatures = require("./features");
 const installKikoPlus = require("./features-plus");
+const installKikoAchievements = require("./achievements");
 
 const app = express();
 const server = http.createServer(app);
@@ -386,6 +387,7 @@ io.on("connection", socket => {
 initDb().then(async () => {
     await installKikoFeatures({ app, io, pool, auth });
     await installKikoPlus({ app, io, pool, auth });
+    await installKikoAchievements({ app, pool, auth });
     app.get("*", (req, res) => res.sendFile(path.join(__dirname, "public", "index.html")));
     server.listen(PORT, () => console.log(`KIKO listening on ${PORT}`));
   })
