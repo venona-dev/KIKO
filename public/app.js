@@ -154,10 +154,16 @@ function appendMessage(m) {
   const messageBox=$("messages"); const stickToBottom=!messageBox.children.length || messageBox.scrollHeight-messageBox.scrollTop-messageBox.clientHeight<80;
   const node=document.createElement("div"); node.className="bubble "+(m.sender_id===me.id?"mine":""); node.dataset.message=m.id; node.dataset.messageType=m.message_type||"text";
   if(m.reply_body){const quote=document.createElement("div");quote.className="reply-preview";quote.textContent="Ответ: "+m.reply_body;node.append(quote);}
-  if(m.message_type==="audio" && m.audio_base64){
-    const audio=document.createElement("audio"); audio.controls=true; audio.preload="metadata"; audio.setAttribute("playsinline","");
-    audio.src="data:"+(m.audio_mime||"audio/webm")+";base64,"+m.audio_base64; audio.className="voice-player"; node.append(audio);
-    const caption=document.createElement("small"); caption.className="voice-caption"; caption.textContent="Голосовое сообщение"; node.append(caption);
+  if((m.message_type==="audio" || m.message_type==="video_note") && m.audio_base64){
+    if(m.message_type==="video_note"){
+      const video=document.createElement("video"); video.controls=true; video.playsInline=true; video.preload="metadata";
+      video.src="data:"+(m.audio_mime||"video/webm")+";base64,"+m.audio_base64; video.className="kiko-video-note"; node.append(video);
+      const caption=document.createElement("small"); caption.className="voice-caption"; caption.textContent="Видеокружок"; node.append(caption);
+    } else {
+      const audio=document.createElement("audio"); audio.controls=true; audio.preload="metadata"; audio.setAttribute("playsinline","");
+      audio.src="data:"+(m.audio_mime||"audio/webm")+";base64,"+m.audio_base64; audio.className="voice-player"; node.append(audio);
+      const caption=document.createElement("small"); caption.className="voice-caption"; caption.textContent="Голосовое сообщение"; node.append(caption);
+    }
   } else { node.append(document.createTextNode(m.body||"")); }
   const stamp=document.createElement("time"); stamp.textContent=time(m.created_at); node.append(stamp);
   const reactionArea=document.createElement("div"); reactionArea.className="reaction-area";
@@ -327,4 +333,56 @@ $("recordButton").addEventListener("click",async()=>{
     recorder.start();button.textContent="■";button.classList.add("recording");toast("Идёт запись. Нажми ■, чтобы отправить");
   }catch(err){toast("Разреши доступ к микрофону для записи");}
 });
+
+/* KIKO video notes */
+(() => {
+  const audioButton=$("recordButton");
+  if(!audioButton || $("videoNoteButton")) return;
+  const videoButton=document.createElement("button");
+  videoButton.id="videoNoteButton";videoButton.type="button";videoButton.className="tool-btn kiko-video-note-button";
+  videoButton.textContent="◉";videoButton.title="Записать видеокружок";videoButton.setAttribute("aria-label","Записать видеокружок");
+  audioButton.insertAdjacentElement("afterend",videoButton);
+  const style=document.createElement("style");
+  style.textContent=".kiko-video-note-button{font-size:20px;color:#a45c80}.kiko-video-note-button.recording{background:#ffe0eb;color:#c52c68;animation:kikoRecPulse 1s infinite alternate}.kiko-video-note{display:block;width:min(260px,65vw);height:min(260px,65vw);object-fit:cover;border-radius:50%;background:#17131c;margin:4px auto}.bubble:has(.kiko-video-note){max-width:300px}@keyframes kikoRecPulse{to{transform:scale(1.07);box-shadow:0 0 0 5px #ed8bb544}}";
+  document.head.append(style);
+  let videoRecorder=null,videoChunks=[],videoStream=null,videoTimer=null;
+  const reset=()=>{clearTimeout(videoTimer);videoTimer=null;if(videoStream){videoStream.getTracks().forEach(t=>t.stop());videoStream=null;}videoRecorder=null;videoChunks=[];videoButton.classList.remove("recording");videoButton.textContent="◉";videoButton.disabled=false;};
+  videoButton.addEventListener("click",async()=>{
+    if(videoRecorder && videoRecorder.state==="recording"){videoRecorder.stop();videoButton.textContent="◉";videoButton.classList.remove("recording");return;}
+    if(!activePerson||!socket){toast("Сначала открой личный чат");return;}
+    if(!navigator.mediaDevices?.getUserMedia||!window.MediaRecorder){toast("Запись видео не поддерживается этим браузером");return;}
+    try{
+      videoStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:"user",width:{ideal:480},height:{ideal:480}},audio:true});
+      const formats=["video/webm;codecs=vp8,opus","video/webm","video/mp4"];
+      const mime=formats.find(t=>MediaRecorder.isTypeSupported(t));
+      videoRecorder=new MediaRecorder(videoStream,mime?{mimeType:mime}:{});videoChunks=[];
+      videoRecorder.ondataavailable=e=>{if(e.data?.size)videoChunks.push(e.data);};
+      videoRecorder.onerror=()=>{reset();toast("Не удалось записать видеокружок");};
+      videoRecorder.onstop=async()=>{
+        clearTimeout(videoTimer);
+        const recorder=videoRecorder;
+        if(videoStream){videoStream.getTracks().forEach(t=>t.stop());videoStream=null;}
+        const blob=new Blob(videoChunks,{type:recorder?.mimeType||"video/webm"});
+        videoRecorder=null;videoChunks=[];videoButton.textContent="◉";videoButton.classList.remove("recording");
+        if(!blob.size){videoButton.disabled=false;toast("Видео не записалось");return;}
+        if(blob.size>5*1024*1024){videoButton.disabled=false;toast("Видеокружок слишком большой (максимум 5 МБ). Запиши короче");return;}
+        videoButton.disabled=true;toast("Отправляем видеокружок…");
+        try{
+          const base64=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result).split(",")[1]);reader.onerror=reject;reader.readAsDataURL(blob);});
+          const recipientId=activePerson?.id;
+          if(!recipientId||!socket){videoButton.disabled=false;toast("Чат уже закрыт");return;}
+          socket.emit("message:send",{recipientId,video_note_base64:base64,video_note_mime:blob.type},result=>{
+            videoButton.disabled=false;
+            if(!result?.ok){toast(result?.error||"Не удалось отправить видеокружок");return;}
+            if(result.message)appendMessage(result.message);window.kikoAchievementTrack?.("message_sent");
+          });
+        }catch(e){videoButton.disabled=false;toast("Не удалось подготовить видеокружок");}
+      };
+      videoRecorder.start(250);videoButton.textContent="■";videoButton.classList.add("recording");toast("Запись видеокружка. Нажми ■ для отправки");
+      videoTimer=setTimeout(()=>{if(videoRecorder?.state==="recording"){toast("Максимум 30 секунд — отправляем");videoRecorder.stop();}},30000);
+    }catch(e){reset();toast("Разреши доступ к камере и микрофону");}
+  });
+  window.addEventListener("beforeunload",()=>{clearTimeout(videoTimer);videoStream?.getTracks().forEach(t=>t.stop());});
+})();
+
 boot();
