@@ -6,6 +6,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { Pool } = require("pg");
 const { Server } = require("socket.io");
+const installKikoFeatures = require("./features");
 
 const app = express();
 const server = http.createServer(app);
@@ -378,5 +379,8 @@ io.on("connection", socket => {
 });
 
 app.get("*", (req, res) => res.sendFile(path.join(__dirname, "public", "index.html")));
-initDb().then(() => server.listen(PORT, () => console.log(`KIKO listening on ${PORT}`)))
+initDb().then(async () => {
+    await installKikoFeatures({ app, io, pool, auth });
+    server.listen(PORT, () => console.log(`KIKO listening on ${PORT}`));
+  })
   .catch(err => { console.error("Database initialization failed", err); process.exit(1); });
