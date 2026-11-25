@@ -291,3 +291,46 @@ body[data-theme="dark"] .post-comment p,body[data-theme="midnight"] .post-commen
 @media(max-width:700px){
   #appView>.sidebar::before,#appView>.sidebar::after{display:none}
 }
+
+
+/* KIKO sidebar: dimensional pearl-pink embossed finish */
+#chatLayout .people-panel,
+#appView>.sidebar{
+  background-color:#fff8fb!important;
+  background-image:
+    radial-gradient(ellipse at 8% 8%,rgba(255,255,255,.98) 0%,rgba(255,255,255,0) 43%),
+    radial-gradient(ellipse at 96% 30%,rgba(246,190,213,.30) 0%,rgba(246,190,213,0) 42%),
+    radial-gradient(ellipse at 12% 88%,rgba(255,220,234,.62) 0%,rgba(255,220,234,0) 46%),
+    linear-gradient(145deg,#fff 0%,#fff9fc 42%,#fce8f0 100%)!important;
+  box-shadow:inset -1px 0 0 rgba(222,151,180,.16),inset 0 1px 0 rgba(255,255,255,.95);
+}
+#chatLayout .people-panel{
+  border-right-color:#f3dce6!important;
+}
+#chatLayout .people-panel::before,
+#appView>.sidebar::before{
+  opacity:.72;
+  filter:drop-shadow(1px 1px 0 rgba(255,255,255,.9)) drop-shadow(-.6px -.6px 0 rgba(205,111,151,.16));
+}
+#chatLayout .people-panel::after,
+#appView>.sidebar::after{
+  opacity:.78;
+  filter:drop-shadow(1px 1px 0 rgba(255,255,255,.95));
+}
+#chatLayout .people-panel .panel-brand,
+#chatLayout .people-panel .panel-tabs,
+#chatLayout .people-panel .panel-heading,
+#chatLayout .people-panel .search,
+#chatLayout .people-panel #peopleList,
+#appView>.sidebar>*{
+  position:relative;
+  z-index:1;
+}
+@media(max-width:700px){
+  #chatLayout .people-panel{
+    background-image:
+      radial-gradient(ellipse at 5% 0%,rgba(255,255,255,.98),transparent 42%),
+      radial-gradient(ellipse at 100% 100%,rgba(246,190,213,.24),transparent 48%),
+      linear-gradient(145deg,#fff 0%,#fff8fb 58%,#fce8f0 100%)!important;
+  }
+}
