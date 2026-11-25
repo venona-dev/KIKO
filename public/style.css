@@ -721,3 +721,25 @@ body:not([data-theme="dark"]):not([data-theme="midnight"]) input::placeholder,
 body:not([data-theme="dark"]):not([data-theme="midnight"]) textarea::placeholder{
   color:#333!important;opacity:1!important;
 }
+
+/* KIKO full-screen dark mode with black-and-pink navigation */
+body[data-theme="dark"],body[data-theme="midnight"]{min-height:100vh;background:#100d12!important;color:#f7edf3!important}
+body[data-theme="dark"] .app-shell,body[data-theme="midnight"] .app-shell{width:100%;max-width:none;min-height:100vh;margin:0;background:#100d12!important}
+body[data-theme="dark"] .main,body[data-theme="midnight"] .main{min-height:100vh;background:#151117!important}
+body[data-theme="dark"] .content,body[data-theme="midnight"] .content{max-width:1000px}
+body[data-theme="dark"] .topbar,body[data-theme="midnight"] .topbar{background:#171018!important;border-color:#34202d!important}
+body[data-theme="dark"] .sidebar,body[data-theme="midnight"] .sidebar{background:linear-gradient(180deg,#09090c,#160d14)!important;border-right:1px solid #51233a!important;box-shadow:8px 0 30px #0005}
+body[data-theme="dark"] .brand-small,body[data-theme="midnight"] .brand-small{color:#ff79b5!important}
+body[data-theme="dark"] .nav,body[data-theme="midnight"] .nav{color:#e8d6e0!important;border:1px solid transparent}
+body[data-theme="dark"] .nav span,body[data-theme="midnight"] .nav span{color:#ff83ba!important}
+body[data-theme="dark"] .nav:hover,body[data-theme="dark"] .nav.active,body[data-theme="midnight"] .nav:hover,body[data-theme="midnight"] .nav.active{color:#fff!important;background:linear-gradient(100deg,#512039,#2c1724)!important;border-color:#a83e70!important;box-shadow:inset 3px 0 #ff6eae,0 5px 18px #0004}
+body[data-theme="dark"] .sidebar-bottom,body[data-theme="midnight"] .sidebar-bottom{border-top:1px solid #51233a!important;background:transparent!important}
+body[data-theme="dark"] .my-avatar,body[data-theme="midnight"] .my-avatar{background:#422034!important;color:#ffadd0!important;border:1px solid #9d3d69}
+body[data-theme="dark"] .composer,body[data-theme="midnight"] .composer,body[data-theme="dark"] .post,body[data-theme="midnight"] .post,body[data-theme="dark"] .chat-layout,body[data-theme="midnight"] .chat-layout,body[data-theme="dark"] .settings-card,body[data-theme="midnight"] .settings-card{background:#1c1720!important;border-color:#3c2936!important}
+body[data-theme="dark"] .people-panel,body[data-theme="midnight"] .people-panel,body[data-theme="dark"] .conversation,body[data-theme="midnight"] .conversation{background:#19141c!important}
+body[data-theme="dark"] .messages,body[data-theme="midnight"] .messages{background-color:#120f15!important}
+body[data-theme="dark"] .message-compose,body[data-theme="midnight"] .message-compose{background:#19141c!important;border-color:#3c2936!important}
+body[data-theme="dark"] .bubble.mine,body[data-theme="midnight"] .bubble.mine{background:#54233d!important;border-color:#a84473!important;color:#fff2f8!important}
+body[data-theme="dark"] .primary,body[data-theme="midnight"] .primary,body[data-theme="dark"] .preview-button,body[data-theme="midnight"] .preview-button{background:#e94f98!important;color:#fff!important}
+body[data-theme="dark"] .tool-btn,body[data-theme="midnight"] .tool-btn,body[data-theme="dark"] .like-btn,body[data-theme="midnight"] .like-btn{background:#3a1b2b!important;color:#ff9bc6!important;border:1px solid #71304e}
+@media(max-width:700px){body[data-theme="dark"] .app-shell,body[data-theme="midnight"] .app-shell{min-height:100dvh}body[data-theme="dark"] .main,body[data-theme="midnight"] .main{min-height:calc(100dvh - 72px)}body[data-theme="dark"] .sidebar,body[data-theme="midnight"] .sidebar{background:linear-gradient(90deg,#09090c,#1b0d16)!important;border-top:1px solid #71304e!important;border-right:0!important;box-shadow:0 -8px 28px #0007}body[data-theme="dark"] .nav.active,body[data-theme="midnight"] .nav.active{background:#54233d!important;border-color:#a84473!important}}
