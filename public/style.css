@@ -894,3 +894,52 @@ body[data-theme="midnight"] #appView .sidebar{
     box-shadow:0 -8px 28px rgba(0,0,0,.48)!important;
   }
 }
+
+
+/* FINAL SIDEBAR FIX: the navigation stays dark in every appearance.
+   Dark themes also retain the pink ornamental glow and fine pattern. */
+body #appView .sidebar,
+body .sidebar,
+#appView .sidebar{
+  background-color:#09080d!important;
+  background-image:linear-gradient(180deg,#08080b 0%,#100b11 58%,#190d16 100%)!important;
+  color:#f5edf3!important;
+  border-right:1px solid #71304e!important;
+}
+body #appView .sidebar .brand-small,body .sidebar .brand-small{color:#ff79b5!important}
+body #appView .sidebar .nav span,body .sidebar .nav span{color:#ff83ba!important}
+body #appView .sidebar .nav,body .sidebar .nav{color:#f2dce7!important}
+body #appView .sidebar .nav.active,body #appView .sidebar .nav:hover,
+body .sidebar .nav.active,body .sidebar .nav:hover{
+  color:#fff!important;background:linear-gradient(100deg,#542039,#2b1723)!important;
+  border-color:#a83e70!important;box-shadow:inset 3px 0 #ff6eae,0 5px 18px #0004!important;
+}
+body #appView .sidebar .sidebar-bottom,body .sidebar .sidebar-bottom{background:transparent!important;border-top:1px solid #71304e!important;color:#f2dce7!important}
+body[data-theme="dark"] #appView .sidebar,
+body[data-theme="midnight"] #appView .sidebar,
+body[data-theme="dark"] .sidebar,
+body[data-theme="midnight"] .sidebar{
+  background-image:
+    radial-gradient(ellipse at 12% 14%,rgba(255,91,163,.25) 0,transparent 34%),
+    radial-gradient(ellipse at 88% 38%,rgba(201,55,126,.22) 0,transparent 31%),
+    radial-gradient(ellipse at 28% 82%,rgba(255,111,177,.18) 0,transparent 35%),
+    repeating-linear-gradient(135deg,rgba(255,121,181,.075) 0 1px,transparent 1px 19px),
+    linear-gradient(180deg,#08080b 0%,#160b14 58%,#210d1a 100%)!important;
+  border-right:1px solid #a83e70!important;
+  box-shadow:8px 0 32px rgba(0,0,0,.45),inset -1px 0 rgba(255,105,171,.22)!important;
+}
+@media(max-width:700px){
+  body #appView .sidebar,body .sidebar,#appView .sidebar{
+    background-image:linear-gradient(90deg,#08080b 0%,#100b11 58%,#190d16 100%)!important;
+    border-top:1px solid #71304e!important;border-right:0!important;
+  }
+  body[data-theme="dark"] #appView .sidebar,body[data-theme="midnight"] #appView .sidebar,
+  body[data-theme="dark"] .sidebar,body[data-theme="midnight"] .sidebar{
+    background-image:
+      radial-gradient(ellipse at 18% 50%,rgba(255,91,163,.25) 0,transparent 38%),
+      radial-gradient(ellipse at 82% 50%,rgba(201,55,126,.22) 0,transparent 38%),
+      repeating-linear-gradient(135deg,rgba(255,121,181,.075) 0 1px,transparent 1px 17px),
+      linear-gradient(90deg,#08080b 0%,#160b14 58%,#210d1a 100%)!important;
+    border-top:1px solid #a83e70!important;
+  }
+}
