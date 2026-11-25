@@ -151,6 +151,7 @@ async function syncCallHistory(){
 setInterval(()=>{syncMessages();syncCallHistory();},4000);
 function appendMessage(m) {
   if(!activePerson || $("messages").querySelector('[data-message="'+m.id+'"]')) return;
+  const messageBox=$("messages"); const stickToBottom=!messageBox.children.length || messageBox.scrollHeight-messageBox.scrollTop-messageBox.clientHeight<80;
   const node=document.createElement("div"); node.className="bubble "+(m.sender_id===me.id?"mine":""); node.dataset.message=m.id;
   if(m.message_type==="audio" && m.audio_base64){
     const audio=document.createElement("audio"); audio.controls=true; audio.preload="metadata"; audio.setAttribute("playsinline","");
@@ -169,7 +170,7 @@ function appendMessage(m) {
   const add=document.createElement("button"); add.type="button"; add.className="reaction-add"; add.textContent="＋"; add.setAttribute("aria-label","Добавить реакцию");
   add.onclick=()=>picker.classList.toggle("hidden");
   reactionArea.append(add,picker); node.append(reactionArea);
-  $("messages").append(node); renderReactionChips(chips,m.reactions||[],m.id); $("messages").scrollTop=$("messages").scrollHeight;
+  $("messages").append(node); renderReactionChips(chips,m.reactions||[],m.id); if(stickToBottom) $("messages").scrollTop=$("messages").scrollHeight;
 }
 function renderCallHistory(call){
   if(!activePerson||!call||!((call.caller_id===me.id&&call.recipient_id===activePerson.id)||(call.recipient_id===me.id&&call.caller_id===activePerson.id)))return;
