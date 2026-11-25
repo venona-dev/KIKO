@@ -361,13 +361,17 @@ io.on("connection", socket => {
   socket.on("message:send", async (payload, callback) => {
     try {
       const recipient = Number(payload?.recipientId);
+      const isVideoNote = Boolean(payload?.video_note_base64);
       const isAudio = Boolean(payload?.audio_base64);
+      const isMedia = isAudio || isVideoNote;
       const replyTo = Number(payload?.reply_to) || null;
-      const body = isAudio ? "Голосовое сообщение" : String(payload?.body || "").trim();
-      const audio = isAudio ? Buffer.from(String(payload.audio_base64), "base64") : null;
-      const audioMime = isAudio ? String(payload.audio_mime || "audio/webm").slice(0,100) : null;
-      if (!recipient || recipient === socket.user.id || (!isAudio && (!body || body.length > 4000)) ||
-          (isAudio && (!audio.length || audio.length > 5*1024*1024 || !/^audio\//.test(audioMime)))) throw new Error("Некорректное сообщение");
+      const body = isMedia ? (isVideoNote ? "Видеокружок" : "Голосовое сообщение") : String(payload?.body || "").trim();
+      const mediaBase64 = isVideoNote ? payload.video_note_base64 : payload.audio_base64;
+      const audio = isMedia ? Buffer.from(String(mediaBase64), "base64") : null;
+      const audioMime = isMedia ? String(isVideoNote ? (payload.video_note_mime || "video/webm") : (payload.audio_mime || "audio/webm")).slice(0,100) : null;
+      if (!recipient || recipient === socket.user.id || (!isMedia && (!body || body.length > 4000)) ||
+          (isAudio && (!audio.length || audio.length > 5*1024*1024 || !/^audio\//.test(audioMime))) ||
+          (isVideoNote && (!audio.length || audio.length > 5*1024*1024 || !/^video\//.test(audioMime)))) throw new Error("Некорректное сообщение");
       const blocked = await pool.query("SELECT 1 FROM user_blocks WHERE (blocker_id=$1 AND blocked_id=$2) OR (blocker_id=$2 AND blocked_id=$1)", [socket.user.id,recipient]);
       if (blocked.rowCount) throw new Error("Нельзя отправить сообщение этому пользователю");
       const target = await pool.query("SELECT id FROM users WHERE id=$1", [recipient]);
@@ -375,7 +379,7 @@ io.on("connection", socket => {
       if (replyTo) { const parent = await pool.query("SELECT id FROM messages WHERE id=$1 AND ((sender_id=$2 AND recipient_id=$3) OR (sender_id=$3 AND recipient_id=$2)) AND deleted_at IS NULL", [replyTo,socket.user.id,recipient]); if (!parent.rowCount) throw new Error("Сообщение для ответа не найдено"); }
       const result = await pool.query(
         "INSERT INTO messages(sender_id,recipient_id,body,message_type,audio_data,audio_mime,reply_to) VALUES($1,$2,$3,$4,$5,$6,$7) RETURNING id,sender_id,recipient_id,body,message_type,encode(audio_data,'base64') AS audio_base64,audio_mime,reply_to,created_at",
-        [socket.user.id, recipient, body, isAudio ? "audio" : "text", audio, audioMime, replyTo]
+        [socket.user.id, recipient, body, isVideoNote ? "video_note" : isAudio ? "audio" : "text", audio, audioMime, replyTo]
       );
       const message = { ...result.rows[0], sender_name: socket.user.username };
       io.to(`user:${recipient}`).to(`user:${socket.user.id}`).emit("message:new", message);
