@@ -52,6 +52,10 @@
     }
     if(!$("kikoReplyBar")){const reply=document.createElement("div");reply.id="kikoReplyBar";reply.classList.add("hidden");reply.innerHTML="<span>Ответ на сообщение</span><b></b>";const cancel=button("×");cancel.onclick=()=>setReply(null);reply.append(cancel);form.before(reply);}
     let file=$("kikoFileInput");if(!file){file=document.createElement("input");file.id="kikoFileInput";file.type="file";file.className="hidden";file.accept="image/*,video/*,application/pdf,.doc,.docx,.txt,.zip";file.onchange=async()=>{if(!file.files[0]||!activePerson)return;try{const f=file.files[0];if(f.size>5*1024*1024)throw Error("Максимальный размер файла — 5 МБ");const data=(await readData(f)).split(",")[1];const m=await api2("/api/features/messages/"+activePerson.id+"/attachment",{method:"POST",body:JSON.stringify({name:f.name,mime:f.type,data})});if(m)appendMessage(m);file.value="";}catch(e){toast(e.message);}};form.append(file);}
+    if(!$("kikoAttachButton")){const attach=button("＋","tool-btn kiko-compose-side-btn");attach.id="kikoAttachButton";attach.title="Прикрепить файл";attach.setAttribute("aria-label","Прикрепить файл");attach.onclick=()=>file.click();form.insertBefore(attach,$("messageText"));}
+    if(!$("kikoStickerButton")){const stickers=button("☺","tool-btn kiko-compose-side-btn");stickers.id="kikoStickerButton";stickers.title="Стикеры и эмодзи";stickers.setAttribute("aria-label","Стикеры и эмодзи");stickers.onclick=stickerPicker;form.insertBefore(stickers,$("messageText"));}
+    $("kikoMenuAttach")?.remove();$("kikoMenuStickers")?.remove();$("kikoMenuVoice")?.remove();
+
     const menu=$("kikoChatMore");if(menu){
       const schedule=$("kikoScheduleButton");if(schedule&&schedule.parentElement!==menu){schedule.classList.add("kiko-chat-menu-item");schedule.textContent="Отложенное сообщение";menu.querySelector("#kikoMenuSchedule")?.remove();menu.append(schedule);}
     }
