@@ -671,3 +671,42 @@ body[data-theme="dark"] .kiko-chat-menu-item,body[data-theme="midnight"] .kiko-c
   #chatLayout.mobile-chat-open #messageForm #kikoStickerButton{left:42px}
   #chatLayout.mobile-chat-open #messageText{padding-left:77px;padding-right:88px}
 }
+
+/* Readability pass: stronger text contrast throughout the interface. */
+body:not([data-theme="dark"]):not([data-theme="midnight"]){color:#21191e}
+body:not([data-theme="dark"]):not([data-theme="midnight"]) .muted,
+body:not([data-theme="dark"]):not([data-theme="midnight"]) .tagline,
+body:not([data-theme="dark"]):not([data-theme="midnight"]) .eyebrow,
+body:not([data-theme="dark"]):not([data-theme="midnight"]) .post-time,
+body:not([data-theme="dark"]):not([data-theme="midnight"]) .person small,
+body:not([data-theme="dark"]):not([data-theme="midnight"]) .bubble time,
+body:not([data-theme="dark"]):not([data-theme="midnight"]) .empty,
+body:not([data-theme="dark"]):not([data-theme="midnight"]) .chat-placeholder,
+body:not([data-theme="dark"]):not([data-theme="midnight"]) label,
+body:not([data-theme="dark"]):not([data-theme="midnight"]) .nav,
+body:not([data-theme="dark"]):not([data-theme="midnight"]) .tab,
+body:not([data-theme="dark"]):not([data-theme="midnight"]) .icon-btn,
+body:not([data-theme="dark"]):not([data-theme="midnight"]) .setting-row{color:#66535d}
+body:not([data-theme="dark"]):not([data-theme="midnight"]) .post-body,
+body:not([data-theme="dark"]):not([data-theme="midnight"]) .compose-body textarea,
+body:not([data-theme="dark"]):not([data-theme="midnight"]) .bubble,
+body:not([data-theme="dark"]):not([data-theme="midnight"]) .person,
+body:not([data-theme="dark"]):not([data-theme="midnight"]) .panel-heading,
+body:not([data-theme="dark"]):not([data-theme="midnight"]) .chat-head,
+body:not([data-theme="dark"]):not([data-theme="midnight"]) .auth-card,
+body:not([data-theme="dark"]):not([data-theme="midnight"]) .content{color:#292027}
+body:not([data-theme="dark"]):not([data-theme="midnight"]) input,
+body:not([data-theme="dark"]):not([data-theme="midnight"]) textarea,
+body:not([data-theme="dark"]):not([data-theme="midnight"]) select{color:#21191e}
+body:not([data-theme="dark"]):not([data-theme="midnight"]) input::placeholder,
+body:not([data-theme="dark"]):not([data-theme="midnight"]) textarea::placeholder{color:#77636d;opacity:1}
+body[data-theme="dark"],body[data-theme="midnight"]{--ink-muted:#ded3e2;--ink-soft:#c9bdce}
+body[data-theme="dark"] .muted,body[data-theme="midnight"] .muted,
+body[data-theme="dark"] .tagline,body[data-theme="midnight"] .tagline,
+body[data-theme="dark"] .eyebrow,body[data-theme="midnight"] .eyebrow,
+body[data-theme="dark"] .post-time,body[data-theme="midnight"] .post-time,
+body[data-theme="dark"] .person small,body[data-theme="midnight"] .person small,
+body[data-theme="dark"] .bubble time,body[data-theme="midnight"] .bubble time,
+body[data-theme="dark"] label,body[data-theme="midnight"] label{color:#d2c6d8}
+body[data-theme="dark"] input::placeholder,body[data-theme="dark"] textarea::placeholder,
+body[data-theme="midnight"] input::placeholder,body[data-theme="midnight"] textarea::placeholder{color:#c0b4c8;opacity:1}
