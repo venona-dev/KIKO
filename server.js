@@ -366,6 +366,8 @@ io.on("connection", socket => {
       const audioMime = isAudio ? String(payload.audio_mime || "audio/webm").slice(0,100) : null;
       if (!recipient || recipient === socket.user.id || (!isAudio && (!body || body.length > 4000)) ||
           (isAudio && (!audio.length || audio.length > 5*1024*1024 || !/^audio\//.test(audioMime)))) throw new Error("Некорректное сообщение");
+      const blocked = await pool.query("SELECT 1 FROM user_blocks WHERE (blocker_id=$1 AND blocked_id=$2) OR (blocker_id=$2 AND blocked_id=$1)", [socket.user.id,recipient]);
+      if (blocked.rowCount) throw new Error("Нельзя отправить сообщение этому пользователю");
       const target = await pool.query("SELECT id FROM users WHERE id=$1", [recipient]);
       if (!target.rowCount) throw new Error("Пользователь не найден");
       if (replyTo) { const parent = await pool.query("SELECT id FROM messages WHERE id=$1 AND ((sender_id=$2 AND recipient_id=$3) OR (sender_id=$3 AND recipient_id=$2)) AND deleted_at IS NULL", [replyTo,socket.user.id,recipient]); if (!parent.rowCount) throw new Error("Сообщение для ответа не найдено"); }
