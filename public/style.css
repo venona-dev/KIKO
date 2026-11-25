@@ -710,3 +710,14 @@ body[data-theme="dark"] .bubble time,body[data-theme="midnight"] .bubble time,
 body[data-theme="dark"] label,body[data-theme="midnight"] label{color:#d2c6d8}
 body[data-theme="dark"] input::placeholder,body[data-theme="dark"] textarea::placeholder,
 body[data-theme="midnight"] input::placeholder,body[data-theme="midnight"] textarea::placeholder{color:#c0b4c8;opacity:1}
+
+
+/* KIKO: maximum text contrast in every light appearance */
+body:not([data-theme="dark"]):not([data-theme="midnight"]),
+body:not([data-theme="dark"]):not([data-theme="midnight"]) *{
+  color:#111!important;
+}
+body:not([data-theme="dark"]):not([data-theme="midnight"]) input::placeholder,
+body:not([data-theme="dark"]):not([data-theme="midnight"]) textarea::placeholder{
+  color:#333!important;opacity:1!important;
+}
