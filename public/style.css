@@ -545,7 +545,26 @@ body[data-theme="dark"] .compose-footer,body[data-theme="midnight"] .compose-foo
 body[data-theme="dark"] .chat-head,body[data-theme="midnight"] .chat-head,
 body[data-theme="dark"] .message-compose,body[data-theme="midnight"] .message-compose,
 body[data-theme="dark"] .sidebar-bottom,body[data-theme="midnight"] .sidebar-bottom{border-color:var(--line);background:var(--surface)}
-body[data-theme="dark"] .messages,body[data-theme="midnight"] .messages{background:#1b1822}
+/* Keep the selected chat wallpaper visible in dark mode: change only its base color,
+   never reset the background shorthand (which would erase wallpaper images). */
+body[data-theme="dark"] .messages,body[data-theme="midnight"] .messages{background-color:#1b1822;color:#f3eaf3}
+/* The chat contacts column has a more specific desktop rule, so override it explicitly. */
+body[data-theme="dark"] #chatLayout .people-panel,
+body[data-theme="midnight"] #chatLayout .people-panel{background:var(--surface);border-color:var(--line);color:var(--ink)}
+body[data-theme="dark"] #chatLayout .panel-tabs,
+body[data-theme="midnight"] #chatLayout .panel-tabs{background:var(--surface)}
+body[data-theme="dark"] #chatLayout .panel-tab,
+body[data-theme="midnight"] #chatLayout .panel-tab{background:var(--surface-2);color:var(--ink-muted);border-color:var(--line)}
+body[data-theme="dark"] #chatLayout .panel-tab.active,
+body[data-theme="midnight"] #chatLayout .panel-tab.active{background:var(--surface-3);color:#f3b5ce}
+body[data-theme="dark"] #chatLayout .person,
+body[data-theme="midnight"] #chatLayout .person{color:var(--ink)}
+body[data-theme="dark"] #chatLayout .person:hover,
+body[data-theme="dark"] #chatLayout .person.active,
+body[data-theme="midnight"] #chatLayout .person:hover,
+body[data-theme="midnight"] #chatLayout .person.active{background:#3a2c3a;color:#f4c5d8}
+body[data-theme="dark"] #chatLayout .conversation,
+body[data-theme="midnight"] #chatLayout .conversation{background:var(--surface)}
 body[data-theme="dark"] .bubble,body[data-theme="midnight"] .bubble{background:#302b38;border-color:#494052;color:var(--ink)}
 body[data-theme="dark"] .bubble.mine,body[data-theme="midnight"] .bubble.mine{background:#493044;border-color:#684158;color:#fff0f6}
 body[data-theme="dark"] .bubble time,body[data-theme="midnight"] .bubble time{color:#b7a8bb}
