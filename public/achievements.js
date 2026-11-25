@@ -16,6 +16,16 @@
       .ka-badge{display:inline-flex;align-items:center;justify-content:center;width:23px;height:23px;border-radius:50%;background:#fff0f6;border:1px solid #edc6d7;font-size:13px;vertical-align:middle;margin-left:5px;box-shadow:0 2px 6px #0001}
       .ka-avatar-wrap{position:relative;display:inline-flex;align-items:center}.ka-avatar-wrap .ka-badge{position:absolute;right:-7px;bottom:-5px;margin:0;width:21px;height:21px;font-size:12px}
       .ka-toast{font-size:12px;padding:8px 10px;background:#fff4f8;border-radius:10px;margin-top:9px;color:#995d78}
+      .ka-toast-stack{position:fixed;z-index:2147483000;top:18px;right:18px;width:min(340px,calc(100vw - 28px));display:flex;flex-direction:column;gap:10px;pointer-events:none}
+      .ka-unlock-toast{display:flex;align-items:center;gap:12px;padding:13px 15px;border:1px solid #efc6d8;border-radius:16px;background:var(--panel,#fff);color:var(--text,#302532);box-shadow:0 12px 36px #24101d30;pointer-events:auto;animation:kaToastIn .28s ease-out both}
+      .ka-unlock-toast .ka-toast-icon{width:42px;height:42px;flex:0 0 42px;display:grid;place-items:center;border-radius:13px;background:#fff0f6;font-size:25px}
+      .ka-unlock-toast strong{display:block;font-size:13px;line-height:1.35}
+      .ka-unlock-toast small{display:block;margin-top:3px;font-size:11px;opacity:.72}
+      .ka-unlock-toast.leaving{animation:kaToastOut .22s ease-in both}
+      @keyframes kaToastIn{from{opacity:0;transform:translateX(18px) scale(.97)}to{opacity:1;transform:translateX(0) scale(1)}}
+      @keyframes kaToastOut{to{opacity:0;transform:translateX(18px) scale(.97)}}
+      body[data-theme="dark"] .ka-unlock-toast,body[data-theme="midnight"] .ka-unlock-toast{background:#292431;color:#fff;border-color:#514455}
+      @media(max-width:600px){.ka-toast-stack{top:12px;right:12px;width:calc(100vw - 24px)}}
       @media(max-width:600px){.ka-grid{grid-template-columns:1fr}}
       body[data-theme="dark"] .ka-card,body[data-theme="midnight"] .ka-card{background:#292431;border-color:#453b4a}
       body[data-theme="dark"] .ka-item,body[data-theme="midnight"] .ka-item{border-color:#514455}
@@ -63,10 +73,29 @@
     try{await call("/api/achievements/featured",{method:"PUT",body:JSON.stringify({key})});current.featured=key;render();toast(key?"Значок отображается около аватарки":"Значок скрыт");}
     catch(e){toast(e.message);}
   }
+  let toastQueue=[];let toastBusy=false;
+  function achievementToast(a){
+    toastQueue.push(a);
+    if(toastBusy)return;
+    toastBusy=true;
+    const showNext=()=>{
+      const item=toastQueue.shift();
+      if(!item){toastBusy=false;return;}
+      let stack=document.getElementById("kaToastStack");
+      if(!stack){stack=document.createElement("div");stack.id="kaToastStack";stack.className="ka-toast-stack";stack.setAttribute("aria-live","polite");stack.setAttribute("aria-atomic","false");document.body.append(stack);}
+      const node=document.createElement("div");node.className="ka-unlock-toast";node.setAttribute("role","status");
+      const icon=document.createElement("span");icon.className="ka-toast-icon";icon.textContent=item.icon||"🏆";
+      const copy=document.createElement("span");const title=document.createElement("strong");title.textContent="Достижение получено!";
+      const name=document.createElement("small");name.textContent=(item.title||"Новое достижение")+" · Поздравляем!";
+      copy.append(title,name);node.append(icon,copy);stack.append(node);
+      window.setTimeout(()=>{node.classList.add("leaving");window.setTimeout(()=>{node.remove();showNext();},240);},4600);
+    };
+    showNext();
+  }
   async function track(event){
     if(!event)return;
     try{const r=await call("/api/achievements/track",{method:"POST",body:JSON.stringify({event})});
-      if(r.newly?.length){await refresh();r.newly.forEach(a=>toast("Новое достижение: "+a.icon+" "+a.title));}
+      if(r.newly?.length){await refresh();r.newly.forEach(achievementToast);}
     }catch(e){console.warn("Achievement tracking failed",e);}
   }
   window.kikoAchievementTrack=track;
