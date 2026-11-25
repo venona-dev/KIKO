@@ -408,3 +408,38 @@ body[data-theme="dark"] .post-comment p,body[data-theme="midnight"] .post-commen
       linear-gradient(135deg,#fff 0%,#fff7fb 54%,#fbe7f0 100%)!important;
   }
 }
+
+
+/* Reliable independent scrolling for chat list and message history */
+#chatLayout,
+#chatLayout .people-panel,
+#chatLayout .conversation,
+#chatLayout .chat-active,
+#chatLayout .messages{min-height:0}
+#chatLayout .people-panel{
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  overscroll-behavior-y:contain;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-gutter:stable;
+}
+#chatLayout .conversation{overflow:hidden}
+#chatLayout .chat-active{overflow:hidden}
+#chatLayout .messages{
+  flex:1 1 auto;
+  min-height:0;
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  overscroll-behavior-y:contain;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-gutter:stable;
+  touch-action:pan-y;
+}
+#chatLayout .bubble{flex:0 0 auto;max-width:min(78%,760px);white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word}
+#chatLayout .call-history-item{flex:0 0 auto}
+@media(max-width:700px){
+  #chatLayout{height:calc(100dvh - 155px);min-height:0}
+  #chatLayout:not(.mobile-chat-open) .people-panel{height:100%;overflow-y:auto!important}
+  #chatLayout.mobile-chat-open .conversation{height:100%;overflow:hidden}
+  #chatLayout .bubble{max-width:88%}
+}
