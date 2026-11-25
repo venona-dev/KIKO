@@ -1122,3 +1122,70 @@ body[data-theme="dark"] #appView .preview-button:hover,
 body[data-theme="midnight"] #appView .preview-button:hover{
   background:var(--accent,#d66f98)!important;filter:brightness(.92);
 }
+
+
+/* Desktop messenger layout: compact navigation rail, dialog list, conversation. */
+@media(min-width:701px){
+  #appView:has(#chatsView:not(.hidden)){
+    width:100%;max-width:none;min-height:100vh;margin:0;
+  }
+  #appView:has(#chatsView:not(.hidden))>.sidebar{
+    width:78px;flex:0 0 78px;padding:22px 9px 16px;align-items:stretch;
+  }
+  #appView:has(#chatsView:not(.hidden))>.sidebar .brand-small{
+    margin:0 0 34px;text-align:center;font-size:25px;letter-spacing:-2px;
+  }
+  #appView:has(#chatsView:not(.hidden))>.sidebar .nav{
+    width:54px;height:52px;margin:5px auto;padding:0;display:flex;
+    align-items:center;justify-content:center;font-size:0;border-radius:15px;
+  }
+  #appView:has(#chatsView:not(.hidden))>.sidebar .nav span{
+    margin:0;font-size:23px;line-height:1;
+  }
+  #appView:has(#chatsView:not(.hidden))>.sidebar .sidebar-bottom{
+    justify-content:center;flex-wrap:wrap;padding:14px 0 0;gap:8px;
+  }
+  #appView:has(#chatsView:not(.hidden))>.sidebar .my-info{display:none}
+  #appView:has(#chatsView:not(.hidden))>.sidebar .icon-btn{width:100%;font-size:17px}
+  #appView:has(#chatsView:not(.hidden))>.main{
+    min-width:0;display:flex;flex-direction:column;height:100vh;
+  }
+  #appView:has(#chatsView:not(.hidden))>.main>.topbar{display:none}
+  #appView:has(#chatsView:not(.hidden)) #chatsView.content{
+    display:block;flex:1;min-height:0;width:100%;max-width:none;margin:0;padding:0;
+  }
+  #appView:has(#chatsView:not(.hidden)) #chatLayout{
+    height:100vh;min-height:0;width:100%;border:0;border-radius:0;
+    grid-template-columns:330px minmax(0,1fr);background:var(--surface,#fff);
+  }
+  #appView:has(#chatsView:not(.hidden)) #chatLayout .people-panel{
+    min-width:0;padding:22px 18px;border-radius:0;
+  }
+  #appView:has(#chatsView:not(.hidden)) #chatLayout .panel-brand,
+  #appView:has(#chatsView:not(.hidden)) #chatLayout .panel-tabs{display:none!important}
+  #appView:has(#chatsView:not(.hidden)) #chatLayout .panel-heading{
+    font-size:19px;margin:3px 0 18px;letter-spacing:-.4px;
+  }
+  #appView:has(#chatsView:not(.hidden)) #chatLayout .search{
+    min-height:42px;font-size:13px;margin-bottom:10px;
+  }
+  #appView:has(#chatsView:not(.hidden)) #chatLayout .person{
+    min-height:66px;padding:12px 10px;gap:12px;
+  }
+  #appView:has(#chatsView:not(.hidden)) #chatLayout .person b{font-size:13px}
+  #appView:has(#chatsView:not(.hidden)) #chatLayout .person small{font-size:11px}
+  #appView:has(#chatsView:not(.hidden)) #chatLayout .conversation{
+    min-width:0;height:100%;border-radius:0;
+  }
+  #appView:has(#chatsView:not(.hidden)) #chatLayout .chat-head{
+    height:76px;flex:0 0 76px;padding:16px 26px;
+  }
+  #appView:has(#chatsView:not(.hidden)) #chatLayout .messages{padding:24px  min(5vw,64px)}
+  #appView:has(#chatsView:not(.hidden)) #chatLayout .message-compose{
+    padding:18px  min(5vw,64px);gap:12px;
+  }
+  #appView:has(#chatsView:not(.hidden)) #chatLayout .message-compose input{
+    min-height:46px;font-size:13px;
+  }
+  #appView:has(#chatsView:not(.hidden)) #chatLayout .mobile-back{display:none!important}
+}
