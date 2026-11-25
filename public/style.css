@@ -591,3 +591,33 @@ body[data-theme="dark"] .sidebar,body[data-theme="midnight"] .sidebar{color:var(
   body[data-theme="dark"] .sidebar,body[data-theme="midnight"] .sidebar{background:rgba(33,30,41,.97);border-top-color:var(--line)}
   body[data-theme="dark"] .conversation,body[data-theme="midnight"] .conversation{background:var(--surface)}
 }
+
+
+/* Mobile messenger-style composer: larger, touch-friendly message field */
+@media(max-width:700px){
+  #chatActive{display:flex!important;flex-direction:column;height:100%;min-height:0}
+  #messageForm.message-compose{
+    display:flex;align-items:center;flex:0 0 auto;width:100%;min-height:70px;
+    padding:10px 10px calc(10px + env(safe-area-inset-bottom));gap:8px;
+    background:var(--panel-bg,#fff);border-top:1px solid var(--border,#f3e8ed);
+  }
+  #messageText{
+    display:block;flex:1 1 0%;width:0;min-width:0;height:50px;min-height:50px;
+    padding:0 16px;border:1px solid var(--border,#eadde3);border-radius:25px;
+    font-size:16px;line-height:1.4;outline:none;
+  }
+  #messageForm #recordButton{
+    display:flex;align-items:center;justify-content:center;flex:0 0 46px;
+    width:46px;height:46px;min-height:46px;padding:0;border-radius:50%;
+  }
+  #messageForm .primary{
+    flex:0 0 auto;min-height:46px;padding:0 15px;border-radius:23px;
+    font-size:13px;white-space:nowrap;
+  }
+}
+@media(max-width:380px){
+  #messageForm.message-compose{gap:6px;padding-left:7px;padding-right:7px}
+  #messageForm #recordButton{flex-basis:42px;width:42px;height:42px;min-height:42px}
+  #messageForm .primary{padding:0 11px;font-size:12px}
+  #messageText{padding:0 13px}
+}
