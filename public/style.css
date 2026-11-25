@@ -1074,7 +1074,7 @@ body:not([data-theme="dark"]):not([data-theme="midnight"]) #appView #chatLayout 
 body:not([data-theme="dark"]):not([data-theme="midnight"]) #appView #chatLayout .people-panel .search::placeholder,
 body:not([data-theme="dark"]):not([data-theme="midnight"]) #appView #chatLayout .people-panel input::placeholder{color:#a88a99!important}
 body:not([data-theme="dark"]):not([data-theme="midnight"]) #appView #chatLayout .people-panel .person{color:#765766!important}
-body:not([data-theme="dark"]):not([data-theme="dark"]) #appView #chatLayout .people-panel .person small{color:#a88a99!important}
+body:not([data-theme="dark"]):not([data-theme="midnight"]) #appView #chatLayout .people-panel .person small{color:#a88a99!important}
 body:not([data-theme="dark"]):not([data-theme="midnight"]) #appView #chatLayout .people-panel .person:hover,
 body:not([data-theme="dark"]):not([data-theme="midnight"]) #appView #chatLayout .people-panel .person.active{
   color:#bd527f!important;background:linear-gradient(100deg,#fff0f6,#ffe3ee)!important;
