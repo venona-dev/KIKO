@@ -771,3 +771,60 @@ body[data-theme="dark"] .tool-btn,body[data-theme="midnight"] .tool-btn,body[dat
   }
   .sidebar .nav.active{background:#54233d!important;border-color:#a84473!important}
 }
+
+
+/* FINAL OVERRIDE: real app navigation is #appView > .sidebar.
+   Earlier pearl-pink selectors had higher specificity and were winning. */
+#appView>.sidebar{
+  background:#09090d!important;
+  background-image:linear-gradient(180deg,#08080b 0%,#101015 58%,#171018 100%)!important;
+  color:#f5edf3!important;
+  border-right:1px solid #29232d!important;
+  box-shadow:8px 0 32px rgba(0,0,0,.38)!important;
+}
+#appView>.sidebar::before,#appView>.sidebar::after{
+  display:none!important;
+  content:none!important;
+  background-image:none!important;
+}
+#appView>.sidebar .brand-small{color:#f2e8ef!important}
+#appView>.sidebar .nav{
+  color:#e7dfe7!important;
+  background:transparent!important;
+  border:1px solid transparent!important;
+}
+#appView>.sidebar .nav span{color:#c8b8c9!important}
+#appView>.sidebar .nav:hover,#appView>.sidebar .nav.active{
+  color:#fff!important;
+  background:#28212d!important;
+  border-color:#514357!important;
+  box-shadow:inset 3px 0 #a98ac0!important;
+}
+#appView>.sidebar .sidebar-bottom{background:transparent!important;border-top:1px solid #38303d!important;color:#eee5ed!important}
+#appView>.sidebar .my-avatar{background:#302638!important;color:#eee1f0!important;border:1px solid #55465d!important}
+
+/* Keep the mobile bottom navigation equally dark. */
+@media(max-width:700px){
+  #appView>.sidebar{
+    background:#09090d!important;
+    background-image:linear-gradient(90deg,#08080b 0%,#101015 58%,#171018 100%)!important;
+    border-top:1px solid #38303d!important;
+    border-right:0!important;
+    box-shadow:0 -8px 28px rgba(0,0,0,.48)!important;
+  }
+  #appView>.sidebar .nav:hover,#appView>.sidebar .nav.active{
+    background:#28212d!important;border-color:#514357!important;
+    box-shadow:inset 0 -2px #a98ac0!important;
+  }
+}
+
+/* Button accent always follows the selected profile color, including dark mode. */
+:root{--accent:#d66f98}
+button.primary,.primary,.preview-button{
+  background:var(--accent,#d66f98)!important;
+  background-image:none!important;
+}
+button.primary:hover,.primary:hover,.preview-button:hover{
+  background:var(--accent,#d66f98)!important;
+  filter:brightness(.92);
+}
