@@ -248,3 +248,46 @@ body[data-theme="dark"] .post-comment p,body[data-theme="midnight"] .post-commen
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='58' height='112' viewBox='0 0 58 112'%3E%3Cpath d='M12 7 L14 13 L20 15 L14 17 L12 23 L10 17 L4 15 L10 13 Z M43 43 L44.5 47.5 L49 49 L44.5 50.5 L43 55 L41.5 50.5 L37 49 L41.5 47.5 Z M19 83 L20 86 L23 87 L20 88 L19 91 L18 88 L15 87 L18 86 Z' fill='%23e98db5'/%3E%3C/svg%3E");
 }
 #chatLayout .people-panel>*{position:relative;z-index:1}
+
+
+/* Main navigation sidebar: matching pink curve and tiny stars */
+@media(min-width:701px){
+  #appView>.sidebar{
+    position:relative;
+    isolation:isolate;
+    overflow:hidden;
+    background:#fff9fc;
+  }
+  #appView>.sidebar::before{
+    content:"";
+    position:absolute;
+    z-index:0;
+    pointer-events:none;
+    top:62px;
+    right:5px;
+    bottom:62px;
+    width:78px;
+    opacity:.68;
+    background-repeat:no-repeat;
+    background-size:100% 100%;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 78 700' preserveAspectRatio='none'%3E%3Cpath d='M10 0 C70 95 69 155 25 245 S0 380 49 465 S72 580 7 700' fill='none' stroke='%23e98db5' stroke-width='1.45' stroke-linecap='round'/%3E%3C/svg%3E");
+  }
+  #appView>.sidebar::after{
+    content:"";
+    position:absolute;
+    z-index:0;
+    pointer-events:none;
+    top:8px;
+    right:7px;
+    bottom:8px;
+    width:58px;
+    opacity:.72;
+    background-repeat:repeat-y;
+    background-size:56px 108px;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='108' viewBox='0 0 56 108'%3E%3Cpath d='M12 7 L14 13 L20 15 L14 17 L12 23 L10 17 L4 15 L10 13 Z M43 42 L44.5 46.5 L49 48 L44.5 49.5 L43 54 L41.5 49.5 L37 48 L41.5 46.5 Z M18 81 L19 84 L22 85 L19 86 L18 89 L17 86 L14 85 L17 84 Z' fill='%23e98db5'/%3E%3C/svg%3E");
+  }
+  #appView>.sidebar>*{position:relative;z-index:1}
+}
+@media(max-width:700px){
+  #appView>.sidebar::before,#appView>.sidebar::after{display:none}
+}
