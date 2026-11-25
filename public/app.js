@@ -157,7 +157,7 @@ function appendMessage(m) {
   if((m.message_type==="audio" || m.message_type==="video_note") && m.audio_base64){
     if(m.message_type==="video_note"){
       const video=document.createElement("video"); video.controls=true; video.playsInline=true; video.preload="metadata";
-      video.className="kiko-video-note"; video.setAttribute("webkit-playsinline","");
+      video.className="kiko-video-note"; video.setAttribute("webkit-playsinline",""); video.style.transform="scaleX(-1)";
       try {
         const raw=atob(m.audio_base64), bytes=new Uint8Array(raw.length);
         for(let i=0;i<raw.length;i++) bytes[i]=raw.charCodeAt(i);
@@ -360,7 +360,7 @@ $("recordButton").addEventListener("click",async()=>{
     .kiko-note-overlay{position:fixed;inset:0;z-index:10050;background:rgba(22,12,20,.82);display:flex;align-items:center;justify-content:center;padding:18px}
     .kiko-note-overlay[hidden]{display:none!important}
     .kiko-note-panel{width:min(440px,100%);background:var(--surface,#fff);color:var(--text,#493541);border-radius:22px;padding:18px;display:flex;flex-direction:column;align-items:center;gap:12px;box-shadow:0 18px 70px #0006}
-    .kiko-note-panel video{width:min(72vw,340px);height:min(72vw,340px);aspect-ratio:1;object-fit:cover;border-radius:50%;background:#111}
+    .kiko-note-panel video{width:min(72vw,340px);height:min(72vw,340px);aspect-ratio:1;object-fit:cover;border-radius:50%;background:#111;transform:scaleX(-1)}
     .kiko-note-actions{display:flex;gap:10px;width:100%;justify-content:center;flex-wrap:wrap}
     .kiko-note-actions button{border:0;border-radius:12px;padding:12px 18px;font:inherit;cursor:pointer;background:#f5e6ed;color:#75445d}
     .kiko-note-actions .send{background:var(--accent,#d66f98);color:white}
@@ -404,7 +404,7 @@ $("recordButton").addEventListener("click",async()=>{
         if(firstError.name==="NotAllowedError"||firstError.name==="SecurityError") throw firstError;
         stream=await navigator.mediaDevices.getUserMedia({video:true,audio:true});
       }
-      preview.srcObject=stream;overlay.hidden=false;
+      preview.srcObject=stream;preview.style.transform="scaleX(-1)";overlay.hidden=false;
       await preview.play();
       const mime=chooseMime();
       recorder=new MediaRecorder(stream,mime?{mimeType:mime, videoBitsPerSecond:650000, audioBitsPerSecond:64000}:{videoBitsPerSecond:650000,audioBitsPerSecond:64000});
@@ -419,7 +419,7 @@ $("recordButton").addEventListener("click",async()=>{
         if(!recordedBlob.size){toast("Видео не записалось. Проверь разрешение камеры и попробуй ещё раз");release();return;}
         if(recordedBlob.size>5*1024*1024){toast("Кружочек больше 5 МБ. Запиши короче");release();return;}
         blobUrl=URL.createObjectURL(recordedBlob);preview.src=blobUrl;preview.muted=false;preview.controls=true;preview.playsInline=true;
-        preview.play().catch(()=>{});
+        preview.style.transform="scaleX(-1)";preview.load();preview.play().catch(()=>{});
         title.textContent="Посмотри кружочек перед отправкой";
         hint.textContent="Видео готово. Можно пересмотреть, отменить или отправить";
         stopBtn.hidden=true;sendBtn.hidden=false;videoButton.disabled=false;videoButton.textContent="◉";videoButton.classList.remove("recording");
