@@ -181,9 +181,29 @@ module.exports = function installKikoFeatures({ app, io, pool, auth }) {
     const member=await pool.query("SELECT 1 FROM group_members WHERE group_id=$1 AND user_id=$2",[id,req.user.id]);if(!member.rowCount)return res.status(403).json({error:"Нет доступа к группе"});
     const r=await pool.query("INSERT INTO group_messages(group_id,sender_id,body) VALUES($1,$2,$3) RETURNING *",[id,req.user.id,body]);const msg={...r.rows[0],username:req.user.username};io.to("group:"+id).emit("group:message",msg);res.status(201).json(msg);
   }));
+  app.get("/api/features/groups/:id/members",auth,safe(async(req,res)=>{
+    const id=Number(req.params.id);
+    const own=await pool.query("SELECT role FROM group_members WHERE group_id=$1 AND user_id=$2",[id,req.user.id]);
+    if(!own.rowCount)return res.status(403).json({error:"Нет доступа к группе"});
+    const r=await pool.query(`SELECT u.id,u.username,u.avatar_data,gm.role
+      FROM group_members gm JOIN users u ON u.id=gm.user_id
+      WHERE gm.group_id=$1 ORDER BY CASE WHEN gm.role='admin' THEN 0 ELSE 1 END,u.username`,[id]);
+    res.json({members:r.rows,role:own.rows[0].role});
+  }));
   app.post("/api/features/groups/:id/members",auth,safe(async(req,res)=>{
-    const id=Number(req.params.id),target=Number(req.body.userId),admin=await pool.query("SELECT role FROM group_members WHERE group_id=$1 AND user_id=$2",[id,req.user.id]);if(admin.rows[0]?.role!=="admin")return res.status(403).json({error:"Добавлять участников может администратор"});
-    const r=await pool.query("INSERT INTO group_members(group_id,user_id) SELECT $1,id FROM users WHERE id=$2 ON CONFLICT DO NOTHING RETURNING user_id",[id,target]);if(!r.rowCount)return res.status(404).json({error:"Пользователь не найден или уже в группе"});io.to("user:"+target).emit("group:added",{id});res.status(201).json({ok:true});
+    const id=Number(req.params.id),admin=await pool.query("SELECT role FROM group_members WHERE group_id=$1 AND user_id=$2",[id,req.user.id]);
+    if(admin.rows[0]?.role!=="admin")return res.status(403).json({error:"Добавлять участников может администратор"});
+    const raw=Array.isArray(req.body.userIds)?req.body.userIds:[req.body.userId];
+    const ids=[...new Set(raw.map(Number).filter(x=>Number.isInteger(x)&&x>0&&x!==req.user.id))].slice(0,49);
+    if(!ids.length)return res.status(400).json({error:"Выбери хотя бы одного пользователя"});
+    const added=[];
+    for(const target of ids){
+      const r=await pool.query("INSERT INTO group_members(group_id,user_id) SELECT $1,id FROM users WHERE id=$2 ON CONFLICT DO NOTHING RETURNING user_id",[id,target]);
+      if(r.rowCount){added.push(target);io.to("user:"+target).emit("group:added",{id});}
+    }
+    if(!added.length)return res.status(409).json({error:"Выбранные пользователи уже состоят в группе или не найдены"});
+    io.to("group:"+id).emit("group:members-updated",{groupId:id});
+    res.status(201).json({ok:true,added});
   }));
   app.delete("/api/features/groups/:id/members/:userId",auth,safe(async(req,res)=>{
     const id=Number(req.params.id),target=Number(req.params.userId),admin=await pool.query("SELECT role FROM group_members WHERE group_id=$1 AND user_id=$2",[id,req.user.id]);if(req.user.id!==target&&admin.rows[0]?.role!=="admin")return res.status(403).json({error:"Недостаточно прав"});
