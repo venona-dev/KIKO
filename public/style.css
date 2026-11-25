@@ -211,3 +211,40 @@ body[data-theme="dark"] .post-comment p,body[data-theme="midnight"] .post-commen
 
 
 .people-section-title{padding:14px 12px 7px;color:var(--muted);font-size:10px;font-weight:800;letter-spacing:.12em}
+
+
+/* KIKO sidebar: one soft pink curve and tiny, subtle stars */
+#chatLayout .people-panel{
+  position:relative;
+  isolation:isolate;
+  background:#fff9fc!important;
+}
+#chatLayout .people-panel::before{
+  content:"";
+  position:absolute;
+  z-index:0;
+  pointer-events:none;
+  top:68px;
+  right:5px;
+  bottom:58px;
+  width:82px;
+  opacity:.58;
+  background-repeat:no-repeat;
+  background-size:100% 100%;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 82 700' preserveAspectRatio='none'%3E%3Cpath d='M12 0 C78 92 72 150 27 235 S-1 370 52 455 S77 570 8 700' fill='none' stroke='%23efa0c1' stroke-width='1.35' stroke-linecap='round'/%3E%3C/svg%3E");
+}
+#chatLayout .people-panel::after{
+  content:"";
+  position:absolute;
+  z-index:0;
+  pointer-events:none;
+  top:8px;
+  right:7px;
+  bottom:8px;
+  width:62px;
+  opacity:.62;
+  background-repeat:repeat-y;
+  background-size:58px 112px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='58' height='112' viewBox='0 0 58 112'%3E%3Cpath d='M12 7 L14 13 L20 15 L14 17 L12 23 L10 17 L4 15 L10 13 Z M43 43 L44.5 47.5 L49 49 L44.5 50.5 L43 55 L41.5 50.5 L37 49 L41.5 47.5 Z M19 83 L20 86 L23 87 L20 88 L19 91 L18 88 L15 87 L18 86 Z' fill='%23e98db5'/%3E%3C/svg%3E");
+}
+#chatLayout .people-panel>*{position:relative;z-index:1}
