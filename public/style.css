@@ -621,3 +621,38 @@ body[data-theme="dark"] .sidebar,body[data-theme="midnight"] .sidebar{color:var(
   #messageForm .primary{padding:0 11px;font-size:12px}
   #messageText{padding:0 13px}
 }
+
+
+/* Final mobile chat composer override; cache-busted from index.html */
+@media(max-width:700px){
+  #chatLayout.mobile-chat-open #chatActive{height:100%;min-height:0;display:flex;flex-direction:column}
+  #chatLayout.mobile-chat-open #messageForm{
+    box-sizing:border-box;display:flex;align-items:center;gap:9px;
+    width:100%;min-height:78px;flex:0 0 auto;
+    padding:12px 12px calc(12px + env(safe-area-inset-bottom));
+    background:var(--surface,#fff);border-top:1px solid var(--line,#eee2e8);
+  }
+  #chatLayout.mobile-chat-open #messageText{
+    box-sizing:border-box;display:block;flex:1 1 0;width:auto;min-width:0;
+    height:54px;min-height:54px;padding:0 18px;
+    border:1px solid var(--line,#eadde3);border-radius:27px;
+    font-size:16px;line-height:1.4;
+  }
+  #chatLayout.mobile-chat-open #messageForm #recordButton{
+    box-sizing:border-box;display:flex;align-items:center;justify-content:center;
+    flex:0 0 46px;width:46px;height:46px;min-height:46px;padding:0;
+    border-radius:50%;font-size:20px;
+  }
+  #chatLayout.mobile-chat-open #messageForm button.primary{
+    box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;
+    flex:0 0 96px;width:96px;min-width:96px;height:48px;min-height:48px;
+    padding:0 12px;border-radius:24px;font-size:13px;white-space:nowrap;
+    overflow:visible;text-overflow:clip;
+  }
+}
+@media(max-width:360px){
+  #chatLayout.mobile-chat-open #messageForm{gap:7px;padding-left:8px;padding-right:8px}
+  #chatLayout.mobile-chat-open #messageForm #recordButton{flex-basis:42px;width:42px;height:42px;min-height:42px}
+  #chatLayout.mobile-chat-open #messageForm button.primary{flex-basis:88px;width:88px;min-width:88px}
+  #chatLayout.mobile-chat-open #messageText{padding:0 13px}
+}
