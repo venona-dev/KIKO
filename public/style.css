@@ -482,3 +482,93 @@ body[data-wallpaper="mint"] .messages,.theme-preview[data-wallpaper="mint"]{back
 body[data-wallpaper="paper"] .messages,.theme-preview[data-wallpaper="paper"]{background-color:#f7f0df;background-image:repeating-linear-gradient(0deg,transparent 0 27px,#dfd3b8 28px,#dfd3b8 29px),linear-gradient(90deg,#f7f0df,#fff9e9)}
 body[data-wallpaper="graphite"] .messages,.theme-preview[data-wallpaper="graphite"]{background:radial-gradient(ellipse at 20% 10%,#55515f,transparent 55%),linear-gradient(145deg,#302d38,#1f2029)}
 body[data-theme="dark"] .messages,body[data-theme="midnight"] .messages{color:#f3eaf3}
+
+
+
+/* Complete dark appearance: apply consistently across the whole KIKO interface */
+body[data-theme="dark"],body[data-theme="midnight"]{
+  color-scheme:dark;
+  --page:#17151d;--surface:#211e29;--surface-2:#292431;--surface-3:#302a39;
+  --line:#3b3445;--line-soft:#342e3d;--ink:#f1eaf3;--ink-muted:#c0b3c7;
+  --ink-soft:#a99bad;--field:#292431;--field-border:#494052;
+  background:var(--page);color:var(--ink);
+}
+body[data-theme="dark"] *,body[data-theme="midnight"] *{border-color:var(--line)}
+body[data-theme="dark"] .app-shell,body[data-theme="midnight"] .app-shell,
+body[data-theme="dark"] .main,body[data-theme="midnight"] .main,
+body[data-theme="dark"] #authView,body[data-theme="midnight"] #authView{background:var(--page);color:var(--ink)}
+body[data-theme="dark"] .sidebar,body[data-theme="midnight"] .sidebar{background:var(--surface);border-color:var(--line)}
+body[data-theme="dark"] .topbar,body[data-theme="midnight"] .topbar{background:var(--surface);border-color:var(--line)}
+body[data-theme="dark"] .topbar h1,body[data-theme="midnight"] .topbar h1,
+body[data-theme="dark"] .panel-heading,body[data-theme="midnight"] .panel-heading,
+body[data-theme="dark"] .post-author,body[data-theme="midnight"] .post-author,
+body[data-theme="dark"] .my-info b,body[data-theme="midnight"] .my-info b,
+body[data-theme="dark"] .chat-head b,body[data-theme="midnight"] .chat-head b{color:var(--ink)}
+body[data-theme="dark"] .eyebrow,body[data-theme="midnight"] .eyebrow,
+body[data-theme="dark"] .muted,body[data-theme="midnight"] .muted,
+body[data-theme="dark"] .tagline,body[data-theme="midnight"] .tagline,
+body[data-theme="dark"] .post-time,body[data-theme="midnight"] .post-time,
+body[data-theme="dark"] .person small,body[data-theme="midnight"] .person small,
+body[data-theme="dark"] .empty,body[data-theme="midnight"] .empty,
+body[data-theme="dark"] .chat-placeholder,body[data-theme="midnight"] .chat-placeholder,
+body[data-theme="dark"] .account-hero p,body[data-theme="midnight"] .account-hero p{color:var(--ink-muted)}
+body[data-theme="dark"] .nav,body[data-theme="midnight"] .nav,
+body[data-theme="dark"] .icon-btn,body[data-theme="midnight"] .icon-btn{color:var(--ink-muted)}
+body[data-theme="dark"] .nav:hover,body[data-theme="dark"] .nav.active,
+body[data-theme="midnight"] .nav:hover,body[data-theme="midnight"] .nav.active,
+body[data-theme="dark"] .person:hover,body[data-theme="dark"] .person.active,
+body[data-theme="midnight"] .person:hover,body[data-theme="midnight"] .person.active{background:#3a2c3a;color:#f4c5d8}
+body[data-theme="dark"] .composer,body[data-theme="midnight"] .composer,
+body[data-theme="dark"] .post,body[data-theme="midnight"] .post,
+body[data-theme="dark"] .settings-card,body[data-theme="midnight"] .settings-card,
+body[data-theme="dark"] .auth-card,body[data-theme="midnight"] .auth-card,
+body[data-theme="dark"] .chat-layout,body[data-theme="midnight"] .chat-layout,
+body[data-theme="dark"] .people-panel,body[data-theme="midnight"] .people-panel,
+body[data-theme="dark"] .conversation,body[data-theme="midnight"] .conversation{background:var(--surface);border-color:var(--line)}
+body[data-theme="dark"] .account-hero,body[data-theme="midnight"] .account-hero{background:linear-gradient(135deg,#382936,#29263a);border-color:var(--line)}
+body[data-theme="dark"] .account-hero h2,body[data-theme="midnight"] .account-hero h2,
+body[data-theme="dark"] .settings-card h3,body[data-theme="midnight"] .settings-card h3{color:var(--ink)}
+body[data-theme="dark"] .auth-card,body[data-theme="midnight"] .auth-card{box-shadow:0 18px 60px #0005}
+body[data-theme="dark"] .tabs,body[data-theme="midnight"] .tabs{background:var(--surface-2)}
+body[data-theme="dark"] .tab,body[data-theme="midnight"] .tab{color:var(--ink-muted)}
+body[data-theme="dark"] .tab.active,body[data-theme="midnight"] .tab.active{background:var(--surface-3);color:#f3b5ce;box-shadow:none}
+body[data-theme="dark"] label,body[data-theme="midnight"] label,
+body[data-theme="dark"] .setting-row,body[data-theme="midnight"] .setting-row{color:var(--ink-muted)}
+body[data-theme="dark"] input,body[data-theme="dark"] textarea,body[data-theme="dark"] select,
+body[data-theme="midnight"] input,body[data-theme="midnight"] textarea,body[data-theme="midnight"] select{
+  background:var(--field);color:var(--ink);border-color:var(--field-border);color-scheme:dark
+}
+body[data-theme="dark"] input::placeholder,body[data-theme="dark"] textarea::placeholder,
+body[data-theme="midnight"] input::placeholder,body[data-theme="midnight"] textarea::placeholder{color:#95889c}
+body[data-theme="dark"] .compose-body textarea,body[data-theme="midnight"] .compose-body textarea{background:transparent}
+body[data-theme="dark"] .compose-footer,body[data-theme="midnight"] .compose-footer,
+body[data-theme="dark"] .chat-head,body[data-theme="midnight"] .chat-head,
+body[data-theme="dark"] .message-compose,body[data-theme="midnight"] .message-compose,
+body[data-theme="dark"] .sidebar-bottom,body[data-theme="midnight"] .sidebar-bottom{border-color:var(--line);background:var(--surface)}
+body[data-theme="dark"] .messages,body[data-theme="midnight"] .messages{background:#1b1822}
+body[data-theme="dark"] .bubble,body[data-theme="midnight"] .bubble{background:#302b38;border-color:#494052;color:var(--ink)}
+body[data-theme="dark"] .bubble.mine,body[data-theme="midnight"] .bubble.mine{background:#493044;border-color:#684158;color:#fff0f6}
+body[data-theme="dark"] .bubble time,body[data-theme="midnight"] .bubble time{color:#b7a8bb}
+body[data-theme="dark"] .like-btn,body[data-theme="midnight"] .like-btn,
+body[data-theme="dark"] .tool-btn,body[data-theme="midnight"] .tool-btn,
+body[data-theme="dark"] .call-actions button,body[data-theme="midnight"] .call-actions button,
+body[data-theme="dark"] .chat-head .mobile-back,body[data-theme="midnight"] .chat-head .mobile-back{background:#3b2b39;color:#f0b5cc}
+body[data-theme="dark"] .reaction-chip,body[data-theme="dark"] .reaction-add,
+body[data-theme="dark"] .reaction-picker,body[data-theme="dark"] .reaction-picker button,
+body[data-theme="midnight"] .reaction-chip,body[data-theme="midnight"] .reaction-add,
+body[data-theme="midnight"] .reaction-picker,body[data-theme="midnight"] .reaction-picker button{background:#332d3b;border-color:#51465a;color:var(--ink)}
+body[data-theme="dark"] .theme-preview,body[data-theme="midnight"] .theme-preview{background:#211e29;border-color:var(--line);color:var(--ink)}
+body[data-theme="dark"] .preview-button,body[data-theme="midnight"] .preview-button{color:white}
+body[data-theme="dark"] .my-avatar,body[data-theme="midnight"] .my-avatar{background:#443044;color:#f2bad0}
+body[data-theme="dark"] .call-card,body[data-theme="midnight"] .call-card{background:#211e29;color:var(--ink)}
+body[data-theme="dark"] .call-top,body[data-theme="midnight"] .call-top{color:var(--ink)}
+body[data-theme="dark"] .call-top button,body[data-theme="midnight"] .call-top button{color:var(--ink-muted)}
+body[data-theme="dark"] .incoming-call p,body[data-theme="midnight"] .incoming-call p{color:var(--ink-muted)}
+body[data-theme="dark"] .call-controls button:not(.call-hangup),
+body[data-theme="midnight"] .call-controls button:not(.call-hangup){background:#3a3342;color:var(--ink)}
+body[data-theme="dark"] .call-history-item,body[data-theme="midnight"] .call-history-item{background:#2a2532;border-color:var(--line);color:var(--ink)}
+body[data-theme="dark"] .sidebar,body[data-theme="midnight"] .sidebar{color:var(--ink)}
+@media(max-width:700px){
+  body[data-theme="dark"] .sidebar,body[data-theme="midnight"] .sidebar{background:rgba(33,30,41,.97);border-top-color:var(--line)}
+  body[data-theme="dark"] .conversation,body[data-theme="midnight"] .conversation{background:var(--surface)}
+}
