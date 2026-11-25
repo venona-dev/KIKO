@@ -10,7 +10,7 @@
     .feature-card h3{font-size:14px;margin:0 0 10px}.feature-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
     .feature-btn{background:#fff0f5;color:#a9587a;border:1px solid #f1d9e4;border-radius:10px;padding:8px 11px;font-size:11px}
     .feature-btn:hover{background:#ffe4ee}.feature-input{min-width:0;flex:1;padding:10px;border:1px solid #eddce4;border-radius:10px;background:#fffafd;color:#574550;font:inherit;font-size:12px}
-    .feature-muted{font-size:11px;color:#a58e99}.feature-list{display:grid;gap:6px}.feature-list button{text-align:left}
+    .kiko-group-add-btn{display:inline-flex!important;align-items:center;justify-content:center;flex:0 0 auto;min-height:36px;padding:8px 12px;border-radius:10px;background:#e77fa4;color:#fff;border:1px solid #d96892;font-size:11px;font-weight:800;white-space:nowrap;position:relative;z-index:5}.kiko-group-add-btn:hover{background:#d96892}.feature-muted{font-size:11px;color:#a58e99}.feature-list{display:grid;gap:6px}.feature-list button{text-align:left}
     .story-strip{display:flex;gap:9px;overflow:auto;padding:5px 0 12px}.story-bubble{flex:0 0 76px;width:76px;height:94px;border-radius:17px;background:linear-gradient(145deg,#fff0f6,#eee8ff);border:1px solid #f0dce7;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:5px;color:#a65e7d;font-size:10px;overflow:hidden}
     .story-bubble img{width:100%;height:65px;object-fit:cover}.story-bubble span{max-width:70px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .message-tools{display:flex;gap:6px;align-items:center}.message-tools button{font-size:11px;padding:5px 7px}
@@ -109,8 +109,20 @@
     wrap.append(name,desc,search,chosen,results,save);renderChosen();dialog("Новая группа · выбери участников",wrap);
   }
   function ensureGroupMemberButton(){
-    const head=$("chatActive")?.querySelector(".chat-head");if(!head||$("kikoGroupMembersButton"))return;
-    const b=button("＋ Участники","feature-btn");b.id="kikoGroupMembersButton";b.title="Добавить людей в группу";b.onclick=manageGroupMembers;head.append(b);
+    const head=$("chatActive")?.querySelector(".chat-head");
+    if(!head||!activeGroup)return;
+    let b=$("kikoGroupMembersButton");
+    if(b&&!head.contains(b)){b.remove();b=null;}
+    if(!b){
+      b=button("＋ Добавить участников","kiko-group-add-btn");
+      b.id="kikoGroupMembersButton";
+      b.type="button";
+      b.title="Добавить людей в эту группу";
+      b.setAttribute("aria-label","Добавить участников в групповой чат");
+      b.onclick=manageGroupMembers;
+    }
+    const calls=head.querySelector(".call-actions");
+    if(calls){head.insertBefore(b,calls);}else{head.append(b);}
   }
   async function manageGroupMembers(){
     if(!activeGroup)return;
