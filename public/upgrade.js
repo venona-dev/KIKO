@@ -81,7 +81,33 @@
   async function loadGroups(){try{groups=await api2("/api/features/groups");renderGroups();}catch(e){console.warn(e);}}
   function ensureGroups(){if($("kikoGroups"))return;const panel=$("peopleList");const wrap=document.createElement("div");wrap.id="kikoGroups";const head=document.createElement("div");head.className="people-section-title";head.textContent="ГРУППЫ";const add=button("＋ Создать группу");add.onclick=createGroup;const list=document.createElement("div");list.id="kikoGroupList";wrap.append(head,add,list);panel.after(wrap);}
   function renderGroups(){const list=$("kikoGroupList");if(!list)return;list.innerHTML="";groups.forEach(g=>{const b=document.createElement("div");b.className="group-row";const t=document.createElement("div");t.innerHTML="<b></b><small></small>";t.querySelector("b").textContent=g.name;t.querySelector("small").textContent=g.last_message||"Групповой чат";b.append(t);b.onclick=()=>openGroup(g);list.append(b);});}
-  function createGroup(){const wrap=document.createElement("div"),name=makeInput("Название группы"),desc=makeInput("Описание (необязательно)"),members=makeInput("Имена пользователей через запятую");const save=button("Создать");save.onclick=async()=>{try{const memberUsernames=members.value.split(",").map(x=>x.trim()).filter(Boolean);await api2("/api/features/groups",{method:"POST",body:JSON.stringify({name:name.value,description:desc.value,memberUsernames})});window.kikoAchievementTrack?.("group_created");document.querySelector(".feature-overlay")?.remove();await loadGroups();toast("Группа создана");}catch(e){toast(e.message);}};wrap.append(name,desc,members,save);dialog("Новая группа",wrap);}
+  function createGroup(){
+    const wrap=document.createElement("div"),name=makeInput("Название группы"),desc=makeInput("Описание (необязательно)"),search=makeInput("Найти людей по имени пользователя…"),chosen=document.createElement("div"),results=document.createElement("div"),save=button("Создать группу");
+    chosen.className=results.className="feature-list";
+    const selected=new Map();
+    const renderChosen=()=>{chosen.innerHTML="";const title=document.createElement("p");title.textContent="Выбрано участников: "+selected.size;chosen.append(title);selected.forEach((user,id)=>{const row=document.createElement("div");row.className="group-row";const label=document.createElement("span");label.textContent="@"+user.username;const remove=button("Убрать");remove.onclick=()=>{selected.delete(id);renderChosen();};row.append(label,remove);chosen.append(row);});};
+    let searchTimer;
+    async function searchUsers(){
+      const q=search.value.trim();results.innerHTML="";if(q.length<2)return;
+      try{
+        const users=await api2("/api/users?q="+encodeURIComponent(q));
+        const available=users.filter(u=>!selected.has(Number(u.id)));
+        if(!available.length){results.textContent="Пользователи не найдены";return;}
+        available.forEach(user=>{
+          const row=document.createElement("label");row.className="group-row";row.style.cursor="pointer";
+          const add=button("＋ Добавить");add.onclick=e=>{e.preventDefault();selected.set(Number(user.id),user);renderChosen();searchUsers();};
+          const username=document.createElement("span");username.textContent="@"+user.username;row.append(username,add);results.append(row);
+        });
+      }catch(e){toast(e.message);}
+    }
+    search.addEventListener("input",()=>{clearTimeout(searchTimer);searchTimer=setTimeout(searchUsers,250);});
+    save.onclick=async()=>{try{
+      if(!name.value.trim())throw Error("Укажи название группы");
+      const response=await api2("/api/features/groups",{method:"POST",body:JSON.stringify({name:name.value,description:desc.value,members:[...selected.keys()]})});
+      window.kikoAchievementTrack?.("group_created");document.querySelector(".feature-overlay")?.remove();await loadGroups();toast("Группа создана"+(selected.size?" · участников: "+selected.size:""));
+    }catch(e){toast(e.message);}};
+    wrap.append(name,desc,search,chosen,results,save);renderChosen();dialog("Новая группа · выбери участников",wrap);
+  }
   function ensureGroupMemberButton(){
     const head=$("chatActive")?.querySelector(".chat-head");if(!head||$("kikoGroupMembersButton"))return;
     const b=button("＋ Участники","feature-btn");b.id="kikoGroupMembersButton";b.title="Добавить людей в группу";b.onclick=manageGroupMembers;head.append(b);
