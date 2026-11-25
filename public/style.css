@@ -467,3 +467,18 @@ body[data-theme="dark"] .post-comment p,body[data-theme="midnight"] .post-commen
 body[data-theme="dark"] .feature-card,body[data-theme="midnight"] .feature-card{background:#292431;border-color:#453b4a;color:#f0e7f0}
 body[data-theme="dark"] .feature-input,body[data-theme="midnight"] .feature-input{background:#211e28;color:#f4edf5;border-color:#514455}
 @media(max-width:700px){.feature-dialog{padding:14px}.message-actions button{font-size:11px;padding:5px}}
+
+
+/* Expanded KIKO chat wallpaper collection */
+body[data-wallpaper="sakura"] .messages,.theme-preview[data-wallpaper="sakura"]{background-color:#fff7fb;background-image:radial-gradient(ellipse at 15% 20%,#f7c6d9 0 2px,transparent 3px),radial-gradient(ellipse at 80% 65%,#f4b8d0 0 3px,transparent 4px),radial-gradient(ellipse at 55% 10%,#ffe0ec 0 5px,transparent 6px),linear-gradient(135deg,#fff8fb,#fce8f1);background-size:54px 58px,72px 76px,90px 84px,auto}
+body[data-wallpaper="ocean"] .messages,.theme-preview[data-wallpaper="ocean"]{background:radial-gradient(ellipse at 15% 15%,#d9f7f5,transparent 48%),radial-gradient(ellipse at 90% 85%,#a8d9e9,transparent 48%),linear-gradient(140deg,#e9f8ff,#d9eef8)}
+body[data-wallpaper="sunset"] .messages,.theme-preview[data-wallpaper="sunset"]{background:linear-gradient(155deg,#fff0d9 0%,#ffd8cf 45%,#f2d9f2 100%)}
+body[data-wallpaper="stars"] .messages,.theme-preview[data-wallpaper="stars"]{background-color:#24243b;background-image:radial-gradient(#fff 1px,transparent 1.5px),radial-gradient(#b9b5ff 1px,transparent 1.5px),linear-gradient(145deg,#24243b,#39345b);background-size:34px 34px,57px 57px,auto;background-position:0 0,17px 19px,0 0}
+body[data-wallpaper="clouds"] .messages,.theme-preview[data-wallpaper="clouds"]{background-color:#eef8ff;background-image:radial-gradient(ellipse at 20% 25%,#fff 0 9%,transparent 10%),radial-gradient(ellipse at 28% 22%,#fff 0 12%,transparent 13%),radial-gradient(ellipse at 76% 70%,#fff 0 10%,transparent 11%),radial-gradient(ellipse at 85% 67%,#fff 0 13%,transparent 14%),linear-gradient(145deg,#e5f4ff,#f8fbff)}
+body[data-wallpaper="aurora"] .messages,.theme-preview[data-wallpaper="aurora"]{background:radial-gradient(ellipse at 20% 10%,#8ee8c4aa,transparent 42%),radial-gradient(ellipse at 80% 30%,#a89affaa,transparent 45%),linear-gradient(145deg,#172c45,#243b56 55%,#302b55)}
+body[data-wallpaper="hearts"] .messages,.theme-preview[data-wallpaper="hearts"]{background-color:#fff5f8;background-image:radial-gradient(circle at 10px 10px,#f3a9c4 2px,transparent 3px),radial-gradient(circle at 25px 25px,#f8c8d9 2px,transparent 3px),linear-gradient(135deg,#fff8fb,#ffeaf2);background-size:38px 38px,38px 38px,auto}
+body[data-wallpaper="lavender"] .messages,.theme-preview[data-wallpaper="lavender"]{background:radial-gradient(ellipse at 15% 20%,#e8dfff,transparent 45%),radial-gradient(ellipse at 85% 80%,#d7c8f7,transparent 45%),linear-gradient(135deg,#faf7ff,#eee8ff)}
+body[data-wallpaper="mint"] .messages,.theme-preview[data-wallpaper="mint"]{background:radial-gradient(ellipse at 10% 15%,#d8f5e8,transparent 48%),radial-gradient(ellipse at 90% 90%,#bdebd8,transparent 48%),linear-gradient(135deg,#f4fff9,#e0f7ec)}
+body[data-wallpaper="paper"] .messages,.theme-preview[data-wallpaper="paper"]{background-color:#f7f0df;background-image:repeating-linear-gradient(0deg,transparent 0 27px,#dfd3b8 28px,#dfd3b8 29px),linear-gradient(90deg,#f7f0df,#fff9e9)}
+body[data-wallpaper="graphite"] .messages,.theme-preview[data-wallpaper="graphite"]{background:radial-gradient(ellipse at 20% 10%,#55515f,transparent 55%),linear-gradient(145deg,#302d38,#1f2029)}
+body[data-theme="dark"] .messages,body[data-theme="midnight"] .messages{color:#f3eaf3}
