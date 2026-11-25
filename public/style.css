@@ -743,3 +743,31 @@ body[data-theme="dark"] .bubble.mine,body[data-theme="midnight"] .bubble.mine{ba
 body[data-theme="dark"] .primary,body[data-theme="midnight"] .primary,body[data-theme="dark"] .preview-button,body[data-theme="midnight"] .preview-button{background:#e94f98!important;color:#fff!important}
 body[data-theme="dark"] .tool-btn,body[data-theme="midnight"] .tool-btn,body[data-theme="dark"] .like-btn,body[data-theme="midnight"] .like-btn{background:#3a1b2b!important;color:#ff9bc6!important;border:1px solid #71304e}
 @media(max-width:700px){body[data-theme="dark"] .app-shell,body[data-theme="midnight"] .app-shell{min-height:100dvh}body[data-theme="dark"] .main,body[data-theme="midnight"] .main{min-height:calc(100dvh - 72px)}body[data-theme="dark"] .sidebar,body[data-theme="midnight"] .sidebar{background:linear-gradient(90deg,#09090c,#1b0d16)!important;border-top:1px solid #71304e!important;border-right:0!important;box-shadow:0 -8px 28px #0007}body[data-theme="dark"] .nav.active,body[data-theme="midnight"] .nav.active{background:#54233d!important;border-color:#a84473!important}}
+
+
+/* KIKO sidebar: keep the navigation black-and-pink in every theme. */
+.sidebar{
+  background:linear-gradient(180deg,#08080b 0%,#100b10 55%,#190d15 100%)!important;
+  color:#f8eaf1!important;
+  border-right:1px solid #71304e!important;
+  box-shadow:8px 0 30px #0006!important;
+}
+.sidebar .brand-small{color:#ff79b5!important}
+.sidebar .nav{color:#f2dce7!important;background:transparent!important;border-color:transparent!important}
+.sidebar .nav span,.sidebar .nav svg{color:#ff83ba!important;stroke:currentColor}
+.sidebar .nav:hover,.sidebar .nav.active{
+  color:#fff!important;
+  background:linear-gradient(100deg,#542039,#2b1723)!important;
+  border-color:#a83e70!important;
+  box-shadow:inset 3px 0 #ff6eae,0 5px 18px #0004!important;
+}
+.sidebar .sidebar-bottom{background:transparent!important;border-top:1px solid #51233a!important;color:#f2dce7!important}
+.sidebar .my-avatar{background:#422034!important;color:#ffadd0!important;border:1px solid #9d3d69!important}
+@media(max-width:700px){
+  .sidebar{
+    background:linear-gradient(90deg,#08080b 0%,#100b10 55%,#1b0d16 100%)!important;
+    border-top:1px solid #71304e!important;border-right:0!important;
+    box-shadow:0 -8px 28px #0007!important;
+  }
+  .sidebar .nav.active{background:#54233d!important;border-color:#a84473!important}
+}
