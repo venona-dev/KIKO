@@ -250,10 +250,13 @@ app.get("/api/calls/:userId", auth, async (req, res) => {
 app.get("/api/messages/:userId", auth, async (req, res) => {
   const other = Number(req.params.userId);
   const result = await pool.query(`
-    SELECT m.id,m.sender_id,m.recipient_id,m.body,m.message_type,encode(m.audio_data,'base64') AS audio_base64,m.audio_mime,m.created_at,u.username AS sender_name
-    FROM messages m JOIN users u ON u.id=m.sender_id
-    WHERE (m.sender_id=$1 AND m.recipient_id=$2) OR (m.sender_id=$2 AND m.recipient_id=$1)
-    ORDER BY m.created_at ASC LIMIT 300
+    SELECT * FROM (
+      SELECT m.id,m.sender_id,m.recipient_id,m.body,m.message_type,encode(m.audio_data,'base64') AS audio_base64,m.audio_mime,m.created_at,u.username AS sender_name
+      FROM messages m JOIN users u ON u.id=m.sender_id
+      WHERE (m.sender_id=$1 AND m.recipient_id=$2) OR (m.sender_id=$2 AND m.recipient_id=$1)
+      ORDER BY m.created_at DESC,m.id DESC LIMIT 500
+    ) recent_messages
+    ORDER BY created_at ASC,id ASC
   `, [req.user.id, other]);
   res.json(result.rows);
 });
