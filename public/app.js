@@ -68,10 +68,10 @@ function renderPost(p, prepend=false) {
   const empty = $("feed").querySelector(".empty"); if(empty) empty.remove();
   const card = document.createElement("article"); card.className="post"; card.dataset.id=p.id;
   card.innerHTML='<div class="post-head"><div class="my-avatar">'+escapeHtml(initials(p.username))+'</div><div><div class="post-author">'+escapeHtml(p.username)+'</div><div class="post-time">'+time(p.created_at)+'</div></div></div><div class="post-body">'+escapeHtml(p.body)+'</div><div class="post-actions"><button class="like-btn '+(p.liked?'liked':'')+'">'+(p.liked?'♥':'♡')+' '+(p.likes||0)+'</button><button class="comments-toggle" type="button">💬 Комментарии <span class="comments-count">'+(p.comments_count||0)+'</span></button></div><section class="post-comments hidden"><div class="comments-list"></div><form class="comment-form"><input maxlength="1000" placeholder="Написать комментарий…" required><button class="primary" type="submit">Отправить</button></form></section>';
-  card.querySelector(".like-btn").onclick = async () => { try { const d=await api("/api/posts/"+p.id+"/like",{method:"POST"}); const b=card.querySelector(".like-btn"); b.textContent=(d.liked?"♥ ":"♡ ")+d.likes; b.classList.toggle("liked",d.liked); } catch(e){toast(e.message);} };
+  card.querySelector(".like-btn").onclick = async () => { try { const d=await api("/api/posts/"+p.id+"/like",{method:"POST"}); const b=card.querySelector(".like-btn"); b.textContent=(d.liked?"♥ ":"♡ ")+d.likes; b.classList.toggle("liked",d.liked); if(d.liked)window.kikoAchievementTrack?.("post_liked"); } catch(e){toast(e.message);} };
   const panel=card.querySelector(".post-comments"),list=card.querySelector(".comments-list"),toggle=card.querySelector(".comments-toggle");
   toggle.onclick=async()=>{const opening=panel.classList.contains("hidden");panel.classList.toggle("hidden");if(opening)await loadPostComments(p.id,list);};
-  card.querySelector(".comment-form").onsubmit=async e=>{e.preventDefault();const input=e.currentTarget.querySelector("input"),body=input.value.trim();if(!body)return;const button=e.currentTarget.querySelector("button");button.disabled=true;try{const comment=await api("/api/posts/"+p.id+"/comments",{method:"POST",body:JSON.stringify({body})});renderPostComment(comment,list);updatePostCommentCount(p.id,1);input.value="";}catch(err){toast(err.message);}finally{button.disabled=false;}};
+  card.querySelector(".comment-form").onsubmit=async e=>{e.preventDefault();const input=e.currentTarget.querySelector("input"),body=input.value.trim();if(!body)return;const button=e.currentTarget.querySelector("button");button.disabled=true;try{const comment=await api("/api/posts/"+p.id+"/comments",{method:"POST",body:JSON.stringify({body})});renderPostComment(comment,list);updatePostCommentCount(p.id,1);input.value="";window.kikoAchievementTrack?.("comment_created");}catch(err){toast(err.message);}finally{button.disabled=false;}};
   prepend ? $("feed").prepend(card) : $("feed").append(card);
 }
 async function loadPostComments(postId,list){
@@ -94,7 +94,7 @@ function receivePostComment(comment){
   const panel=card.querySelector(".post-comments"),list=card.querySelector(".comments-list");
   if(!panel?.classList.contains("hidden"))renderPostComment(comment,list);
 }
-$("postForm").addEventListener("submit", async e => { e.preventDefault(); const body=$("postText").value.trim(); if(!body)return; try { const p=await api("/api/posts",{method:"POST",body:JSON.stringify({body})}); if(!$("feed").querySelector('[data-id="'+p.id+'"]')) renderPost(p,true); $("postText").value=""; } catch(e){toast(e.message);} });
+$("postForm").addEventListener("submit", async e => { e.preventDefault(); const body=$("postText").value.trim(); if(!body)return; try { const p=await api("/api/posts",{method:"POST",body:JSON.stringify({body})}); if(!$("feed").querySelector('[data-id="'+p.id+'"]')) renderPost(p,true); $("postText").value="";window.kikoAchievementTrack?.("post_created"); } catch(e){toast(e.message);} });
 document.querySelectorAll(".nav").forEach(btn => btn.onclick = () => {
   const chats=btn.dataset.view==="chats"; document.querySelectorAll(".nav").forEach(b=>b.classList.toggle("active",b===btn));
   $("wallView").classList.toggle("hidden",chats); $("chatsView").classList.toggle("hidden",!chats);
@@ -203,7 +203,7 @@ $("messageForm").addEventListener("submit",e=>{
   e.preventDefault(); if(!activePerson||!socket)return; const body=$("messageText").value.trim(); if(!body)return;
   socket.emit("message:send",{recipientId:activePerson.id,body},result=>{
     if(!result?.ok){toast(result?.error||"Не удалось отправить");return;}
-    $("messageText").value="";
+    $("messageText").value="";window.kikoAchievementTrack?.("message_sent");
     if(result.message && !$("messages").querySelector('[data-message="'+result.message.id+'"]')) appendMessage(result.message);
   });
 });
@@ -272,7 +272,7 @@ async function acceptCall(){
 }
 function startCallHistory(){
   if(callHistoryStarted||!callPeer||!socket||!callId||incomingOffer||me.id!==callInitiatorId)return;
-  callHistoryStarted=true;
+  callHistoryStarted=true;window.kikoAchievementTrack?.("call_started");
   socket.emit("call:history:start",{to:callPeer,callId,callType:callMode});
 }
 function finishCall(notify=true){
@@ -320,7 +320,7 @@ $("recordButton").addEventListener("click",async()=>{
         socket.emit("message:send",{recipientId:activePerson.id,audio_base64:base64,audio_mime:blob.type},result=>{
           button.disabled=false;
           if(!result?.ok){toast(result?.error||"Не удалось отправить голосовое");return;}
-          if(result.message)appendMessage(result.message);
+          if(result.message)appendMessage(result.message); window.kikoAchievementTrack?.("message_sent");
         });
       }catch(err){button.disabled=false;toast("Не удалось подготовить аудио");}
     };
