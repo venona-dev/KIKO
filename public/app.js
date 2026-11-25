@@ -152,7 +152,8 @@ setInterval(()=>{syncMessages();syncCallHistory();},4000);
 function appendMessage(m) {
   if(!activePerson || $("messages").querySelector('[data-message="'+m.id+'"]')) return;
   const messageBox=$("messages"); const stickToBottom=!messageBox.children.length || messageBox.scrollHeight-messageBox.scrollTop-messageBox.clientHeight<80;
-  const node=document.createElement("div"); node.className="bubble "+(m.sender_id===me.id?"mine":""); node.dataset.message=m.id;
+  const node=document.createElement("div"); node.className="bubble "+(m.sender_id===me.id?"mine":""); node.dataset.message=m.id; node.dataset.messageType=m.message_type||"text";
+  if(m.reply_body){const quote=document.createElement("div");quote.className="reply-preview";quote.textContent="Ответ: "+m.reply_body;node.append(quote);}
   if(m.message_type==="audio" && m.audio_base64){
     const audio=document.createElement("audio"); audio.controls=true; audio.preload="metadata"; audio.setAttribute("playsinline","");
     audio.src="data:"+(m.audio_mime||"audio/webm")+";base64,"+m.audio_base64; audio.className="voice-player"; node.append(audio);
