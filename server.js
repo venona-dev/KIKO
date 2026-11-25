@@ -360,6 +360,7 @@ io.on("connection", socket => {
     try {
       const recipient = Number(payload?.recipientId);
       const isAudio = Boolean(payload?.audio_base64);
+      const replyTo = Number(payload?.reply_to) || null;
       const body = isAudio ? "Голосовое сообщение" : String(payload?.body || "").trim();
       const audio = isAudio ? Buffer.from(String(payload.audio_base64), "base64") : null;
       const audioMime = isAudio ? String(payload.audio_mime || "audio/webm").slice(0,100) : null;
@@ -367,9 +368,10 @@ io.on("connection", socket => {
           (isAudio && (!audio.length || audio.length > 5*1024*1024 || !/^audio\//.test(audioMime)))) throw new Error("Некорректное сообщение");
       const target = await pool.query("SELECT id FROM users WHERE id=$1", [recipient]);
       if (!target.rowCount) throw new Error("Пользователь не найден");
+      if (replyTo) { const parent = await pool.query("SELECT id FROM messages WHERE id=$1 AND ((sender_id=$2 AND recipient_id=$3) OR (sender_id=$3 AND recipient_id=$2)) AND deleted_at IS NULL", [replyTo,socket.user.id,recipient]); if (!parent.rowCount) throw new Error("Сообщение для ответа не найдено"); }
       const result = await pool.query(
-        "INSERT INTO messages(sender_id,recipient_id,body,message_type,audio_data,audio_mime) VALUES($1,$2,$3,$4,$5,$6) RETURNING id,sender_id,recipient_id,body,message_type,encode(audio_data,'base64') AS audio_base64,audio_mime,created_at",
-        [socket.user.id, recipient, body, isAudio ? "audio" : "text", audio, audioMime]
+        "INSERT INTO messages(sender_id,recipient_id,body,message_type,audio_data,audio_mime,reply_to) VALUES($1,$2,$3,$4,$5,$6,$7) RETURNING id,sender_id,recipient_id,body,message_type,encode(audio_data,'base64') AS audio_base64,audio_mime,reply_to,created_at",
+        [socket.user.id, recipient, body, isAudio ? "audio" : "text", audio, audioMime, replyTo]
       );
       const message = { ...result.rows[0], sender_name: socket.user.username };
       io.to(`user:${recipient}`).to(`user:${socket.user.id}`).emit("message:new", message);
