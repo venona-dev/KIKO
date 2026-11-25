@@ -1084,3 +1084,41 @@ body:not([data-theme="dark"]):not([data-theme="midnight"]) #appView #chatLayout 
   body:not([data-theme="dark"]):not([data-theme="midnight"]) #appView .sidebar::before,
   body:not([data-theme="dark"]):not([data-theme="midnight"]) #appView .sidebar::after{display:none!important}
 }
+
+
+/* Profile appearance: explicitly restore the light palette when light/lavender is selected. */
+body:not([data-theme="dark"]):not([data-theme="midnight"]) #appView #accountView{
+  color:#59434f!important;
+}
+body:not([data-theme="dark"]):not([data-theme="midnight"]) #appView #accountView .account-hero{
+  background:linear-gradient(135deg,#fff0f6,#f6edff)!important;
+  border:1px solid #f3dce7!important;
+}
+body:not([data-theme="dark"]):not([data-theme="midnight"]) #appView #accountView .account-hero h2{color:#674b5a!important}
+body:not([data-theme="dark"]):not([data-theme="midnight"]) #appView #accountView .account-hero p{color:#987b89!important}
+body:not([data-theme="dark"]):not([data-theme="midnight"]) #appView #accountView .settings-card{
+  background:#fff!important;border:1px solid #f0e3e9!important;color:#715665!important;
+}
+body:not([data-theme="dark"]):not([data-theme="midnight"]) #appView #accountView .settings-card h3{color:#6c5360!important}
+body:not([data-theme="dark"]):not([data-theme="midnight"]) #appView #accountView .setting-row{color:#8b7180!important}
+body:not([data-theme="dark"]):not([data-theme="midnight"]) #appView #accountView .setting-row input,
+body:not([data-theme="dark"]):not([data-theme="midnight"]) #appView #accountView .setting-row select{
+  background:#fff!important;color:#614b57!important;border-color:#eddae3!important;color-scheme:light;
+}
+body:not([data-theme="dark"]):not([data-theme="midnight"]) #appView #accountView .theme-preview{
+  background:#fffafd!important;border:1px solid #f1e3e9!important;color:#715665!important;
+}
+
+/* The selected accent must win over legacy hard-coded dark-mode pink button rules. */
+body[data-theme="dark"] #appView .primary,
+body[data-theme="midnight"] #appView .primary,
+body[data-theme="dark"] #appView .preview-button,
+body[data-theme="midnight"] #appView .preview-button{
+  background:var(--accent,#d66f98)!important;background-image:none!important;color:#fff!important;
+}
+body[data-theme="dark"] #appView .primary:hover,
+body[data-theme="midnight"] #appView .primary:hover,
+body[data-theme="dark"] #appView .preview-button:hover,
+body[data-theme="midnight"] #appView .preview-button:hover{
+  background:var(--accent,#d66f98)!important;filter:brightness(.92);
+}
