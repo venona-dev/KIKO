@@ -443,3 +443,27 @@ body[data-theme="dark"] .post-comment p,body[data-theme="midnight"] .post-commen
   #chatLayout.mobile-chat-open .conversation{height:100%;overflow:hidden}
   #chatLayout .bubble{max-width:88%}
 }
+
+
+/* KIKO Plus: cohesive controls for expanded messenger features */
+.feature-card{background:var(--panel,#fff);border:1px solid #f1e1e9;border-radius:16px;padding:14px;margin:12px 0;color:var(--ink,#715665)}
+.feature-card h3{font-size:14px;margin:0 0 10px}
+.feature-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.feature-btn{background:#fff0f5;color:#a9587a;border:1px solid #f1d9e4;border-radius:10px;padding:8px 11px;font-size:11px}
+.feature-input{min-width:0;flex:1;padding:10px;border:1px solid #eddce4;border-radius:10px;background:#fffafd;color:#574550;font:inherit;font-size:12px}
+.story-strip{display:flex;gap:9px;overflow:auto;padding:5px 0 12px}
+.story-bubble{flex:0 0 76px;width:76px;height:94px;border-radius:17px;background:linear-gradient(145deg,#fff0f6,#eee8ff);border:1px solid #f0dce7;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:5px;color:#a65e7d;font-size:10px;overflow:hidden}
+.story-bubble img{width:100%;height:65px;object-fit:cover}
+.message-actions{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}
+.message-actions button{background:transparent;color:#a47b8e;font-size:10px;padding:3px 5px}
+.reply-preview{border-left:3px solid #df91b0;padding:5px 8px;margin-bottom:6px;background:#fff6fa;border-radius:5px;font-size:10px;color:#95677e}
+.typing-indicator{font-size:10px;color:#c16f94;margin-left:8px}
+.feature-overlay{position:fixed;inset:0;z-index:120;background:#24182188;display:grid;place-items:center;padding:16px}
+.feature-dialog{width:min(560px,100%);max-height:85dvh;overflow:auto;background:#fff;border-radius:18px;padding:18px;box-shadow:0 18px 70px #0003}
+.feature-dialog h3{margin:0 0 12px;color:#765365}
+.group-row{display:flex;align-items:center;gap:9px;padding:9px;border-radius:10px;background:#fff7fa;margin:5px 0;cursor:pointer}
+.group-row b{font-size:12px}.group-row small{display:block;color:#a58e99;font-size:10px}
+#kikoReplyBar{display:flex;align-items:center;gap:8px;padding:7px 12px;background:#fff5f9;color:#96647b;font-size:11px}
+body[data-theme="dark"] .feature-card,body[data-theme="midnight"] .feature-card{background:#292431;border-color:#453b4a;color:#f0e7f0}
+body[data-theme="dark"] .feature-input,body[data-theme="midnight"] .feature-input{background:#211e28;color:#f4edf5;border-color:#514455}
+@media(max-width:700px){.feature-dialog{padding:14px}.message-actions button{font-size:11px;padding:5px}}
