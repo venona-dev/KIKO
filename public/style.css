@@ -1189,3 +1189,30 @@ body[data-theme="midnight"] #appView .preview-button:hover{
   }
   #appView:has(#chatsView:not(.hidden)) #chatLayout .mobile-back{display:none!important}
 }
+
+
+/* Compact shortcuts beside the dialog-list heading (desktop messenger). */
+@media(min-width:701px){
+  #appView:has(#chatsView:not(.hidden)) #chatLayout .panel-heading{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+  }
+  #appView:has(#chatsView:not(.hidden)) #chatLayout .panel-quick-actions{
+    display:flex;align-items:center;gap:7px;flex-shrink:0;
+  }
+  #appView:has(#chatsView:not(.hidden)) #chatLayout .quick-nav-btn{
+    display:inline-flex!important;align-items:center;justify-content:center;
+    width:30px;height:30px;min-width:30px;padding:0;margin:0;
+    border:1px solid #e7b9cc!important;border-radius:9px;
+    background:rgba(255,255,255,.78)!important;color:#c65f88!important;
+    font-size:17px;line-height:1;cursor:pointer;
+  }
+  #appView:has(#chatsView:not(.hidden)) #chatLayout .quick-nav-btn:hover,
+  #appView:has(#chatsView:not(.hidden)) #chatLayout .quick-nav-btn:focus-visible{
+    background:#ffe6f0!important;border-color:#df7da4!important;
+    outline:2px solid rgba(223,125,164,.2);outline-offset:1px;
+  }
+}
+body[data-theme="dark"] #appView:has(#chatsView:not(.hidden)) #chatLayout .quick-nav-btn,
+body[data-theme="midnight"] #appView:has(#chatsView:not(.hidden)) #chatLayout .quick-nav-btn{
+  background:#21151f!important;color:#ff9ac5!important;border-color:#71304e!important;
+}
