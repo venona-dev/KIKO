@@ -334,3 +334,77 @@ body[data-theme="dark"] .post-comment p,body[data-theme="midnight"] .post-commen
       linear-gradient(145deg,#fff 0%,#fff8fb 58%,#fce8f0 100%)!important;
   }
 }
+
+
+/* KIKO glass bloom: layered translucent shine and pearl highlights */
+#chatLayout .people-panel,
+#appView>.sidebar{
+  position:relative;
+  isolation:isolate;
+  background-color:#fff9fc!important;
+  background-image:
+    radial-gradient(ellipse at 18% 4%,rgba(255,255,255,.98) 0%,rgba(255,255,255,0) 34%),
+    radial-gradient(ellipse at 92% 18%,rgba(255,255,255,.82) 0%,rgba(255,255,255,0) 25%),
+    radial-gradient(ellipse at 84% 76%,rgba(244,166,198,.30) 0%,rgba(244,166,198,0) 36%),
+    radial-gradient(ellipse at 8% 94%,rgba(255,255,255,.88) 0%,rgba(255,255,255,0) 32%),
+    linear-gradient(132deg,#fff 0%,#fff9fc 28%,#fbe7f0 66%,#fff2f8 100%)!important;
+  box-shadow:inset -1px 0 0 rgba(222,151,180,.2),inset 0 1px 0 #fff, inset 0 -1px 0 rgba(255,255,255,.8);
+}
+#chatLayout .people-panel::marker{content:none}
+#chatLayout .people-panel::before,
+#appView>.sidebar::before{
+  opacity:.86;
+  filter:drop-shadow(1px 1px 0 rgba(255,255,255,.98))
+         drop-shadow(0 0 5px rgba(255,255,255,.9))
+         drop-shadow(0 0 8px rgba(238,133,177,.22));
+}
+#chatLayout .people-panel::after,
+#appView>.sidebar::after{
+  opacity:.92;
+  filter:drop-shadow(1px 1px 0 rgba(255,255,255,1))
+         drop-shadow(0 0 4px rgba(255,255,255,.95))
+         drop-shadow(0 0 7px rgba(231,126,171,.35));
+}
+/* Fine glass sheen: soft diagonal reflections, never covering controls */
+#chatLayout .people-panel,
+#appView>.sidebar{
+  overflow:hidden;
+}
+#chatLayout .people-panel > *,
+#appView>.sidebar > *{z-index:2}
+#chatLayout .people-panel{
+  border-right:1px solid rgba(226,160,188,.28)!important;
+}
+#chatLayout .people-panel .panel-tab{
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 3px 12px rgba(213,132,166,.08);
+}
+#chatLayout .people-panel .panel-tab.active,
+#chatLayout .people-panel .panel-tab:hover{
+  background:linear-gradient(145deg,rgba(255,255,255,.98),rgba(255,226,238,.94))!important;
+  box-shadow:inset 0 1px 0 #fff,0 4px 14px rgba(213,111,153,.15);
+}
+#chatLayout .people-panel .search{
+  background:rgba(255,255,255,.72);
+  border-color:rgba(231,185,204,.55);
+  box-shadow:inset 0 1px 3px rgba(181,116,145,.06),0 3px 12px rgba(219,153,180,.08);
+  backdrop-filter:blur(10px);
+}
+#chatLayout .people-panel .person{
+  border:1px solid transparent;
+  transition:background .2s ease,box-shadow .2s ease,border-color .2s ease;
+}
+#chatLayout .people-panel .person:hover,
+#chatLayout .people-panel .person.active{
+  background:linear-gradient(135deg,rgba(255,255,255,.92),rgba(255,226,238,.78));
+  border-color:rgba(239,190,210,.5);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 5px 16px rgba(205,120,157,.11);
+}
+@media(max-width:700px){
+  #chatLayout .people-panel,
+  #appView>.sidebar{
+    background-image:
+      radial-gradient(ellipse at 10% 0%,rgba(255,255,255,.98),transparent 38%),
+      radial-gradient(ellipse at 100% 100%,rgba(244,166,198,.28),transparent 40%),
+      linear-gradient(135deg,#fff 0%,#fff7fb 54%,#fbe7f0 100%)!important;
+  }
+}
