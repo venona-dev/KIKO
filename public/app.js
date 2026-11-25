@@ -14,7 +14,7 @@ function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;
 function time(value) { return new Date(value).toLocaleString("ru-RU", { day:"numeric", month:"short", hour:"2-digit", minute:"2-digit" }); }
 function logout() { finishCall(false); localStorage.removeItem("kiko_token"); token = null; me = null; if(socket) socket.disconnect(); $("appView").classList.add("hidden"); $("authView").classList.remove("hidden"); }
 async function loadProfile(){
- try{const p=await api("/api/profile");me={...me,...p};$("profileName").textContent=me.username;$("profileStatus").value=me.status||"";$("profileStatusPreview").textContent=me.status||"Настрой свой профиль";$("themeChoice").value=me.theme||"light";$("accentChoice").value=me.accent||"pink";$("wallpaperChoice").value=me.wallpaper||"soft";paintProfileAvatar();applyAppearance();}catch(e){toast(e.message);}
+ try{const p=await api("/api/profile");me={...me,...p};$("profileName").textContent=me.username;$("profileStatus").value=me.status||"";$("profileStatusPreview").textContent=me.status||"Настрой свой профиль";$("themeChoice").value=me.theme||"light";$("accentChoice").value=me.accent||"pink";$("wallpaperChoice").value=me.wallpaper||"soft";paintProfileAvatar();applyAppearance();document.dispatchEvent(new Event("kiko:avatar-painted"));}catch(e){toast(e.message);}
 }
 function paintProfileAvatar(){
  [$("myAvatar"),$("postAvatar"),$("profileAvatarPreview")].forEach(el=>{if(!el)return;el.textContent=me.avatar_data?"":initials(me.username);el.style.backgroundImage=me.avatar_data?'url("'+me.avatar_data+'")':"";el.classList.toggle("has-photo",!!me.avatar_data);});
@@ -28,7 +28,7 @@ function applyAppearance(){
 $("saveProfile").onclick=async()=>{
  const file=$("avatarFile").files[0];let avatar_data=me.avatar_data||null;
  if(file){if(file.size>1500000){toast("Аватарка должна быть меньше 1,5 МБ");return;}avatar_data=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(String(r.result));r.onerror=reject;r.readAsDataURL(file);});}
- try{const p=await api("/api/profile",{method:"PUT",body:JSON.stringify({status:$("profileStatus").value,avatar_data})});me={...me,...p};$("avatarFile").value="";paintProfileAvatar();$("profileStatusPreview").textContent=me.status||"Настрой свой профиль";toast("Профиль сохранён");}catch(e){toast(e.message);}
+ try{const p=await api("/api/profile",{method:"PUT",body:JSON.stringify({status:$("profileStatus").value,avatar_data})});me={...me,...p};$("avatarFile").value="";paintProfileAvatar();document.dispatchEvent(new Event("kiko:avatar-painted"));$("profileStatusPreview").textContent=me.status||"Настрой свой профиль";toast("Профиль сохранён");}catch(e){toast(e.message);}
 };
 $("saveAppearance").onclick=async()=>{
  try{const p=await api("/api/profile",{method:"PUT",body:JSON.stringify({theme:$("themeChoice").value,accent:$("accentChoice").value,wallpaper:$("wallpaperChoice").value})});me={...me,...p};applyAppearance();toast("Оформление применено");}catch(e){toast(e.message);}
