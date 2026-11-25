@@ -943,3 +943,48 @@ body[data-theme="midnight"] .sidebar{
     border-top:1px solid #a83e70!important;
   }
 }
+
+
+/* Private messages: match the main navigation's dark pink sidebar. */
+#appView #chatLayout .people-panel{
+  position:relative!important;isolation:isolate;overflow:hidden;
+  background-color:#09080d!important;
+  background-image:
+    radial-gradient(ellipse at 12% 14%,rgba(255,91,163,.20) 0,transparent 34%),
+    radial-gradient(ellipse at 88% 72%,rgba(201,55,126,.17) 0,transparent 35%),
+    repeating-linear-gradient(135deg,rgba(255,121,181,.055) 0 1px,transparent 1px 19px),
+    linear-gradient(180deg,#08080b 0%,#160b14 58%,#210d1a 100%)!important;
+  color:#f5edf3!important;border-right:1px solid #8c315c!important;
+  box-shadow:inset -1px 0 rgba(255,105,171,.16)!important;
+}
+#appView #chatLayout .people-panel > *{position:relative;z-index:1}
+#appView #chatLayout .people-panel .panel-tabs{background:transparent!important;border-color:#71304e!important}
+#appView #chatLayout .people-panel .panel-tab{
+  background:#21151f!important;color:#e8cbd9!important;border-color:#63304a!important;
+}
+#appView #chatLayout .people-panel .panel-tab.active,
+#appView #chatLayout .people-panel .panel-tab:hover{
+  background:linear-gradient(100deg,#542039,#2b1723)!important;color:#fff!important;
+  border-color:#a83e70!important;box-shadow:inset 0 -2px #ff6eae!important;
+}
+#appView #chatLayout .people-panel .search,
+#appView #chatLayout .people-panel input{
+  background:#171019!important;color:#fff0f6!important;border-color:#63304a!important;
+}
+#appView #chatLayout .people-panel .search::placeholder,
+#appView #chatLayout .people-panel input::placeholder{color:#c9a6b8!important}
+#appView #chatLayout .people-panel .person{color:#f2dce7!important;border-color:transparent!important}
+#appView #chatLayout .people-panel .person small{color:#d0aebe!important}
+#appView #chatLayout .people-panel .person:hover,
+#appView #chatLayout .people-panel .person.active{
+  background:linear-gradient(100deg,#542039,#2b1723)!important;color:#fff!important;
+  border-color:#a83e70!important;box-shadow:inset 3px 0 #ff6eae!important;
+}
+@media(max-width:700px){
+  #appView #chatLayout .people-panel{
+    background-image:
+      radial-gradient(ellipse at 18% 50%,rgba(255,91,163,.20) 0,transparent 38%),
+      repeating-linear-gradient(135deg,rgba(255,121,181,.06) 0 1px,transparent 1px 17px),
+      linear-gradient(90deg,#08080b 0%,#160b14 58%,#210d1a 100%)!important;
+  }
+}
