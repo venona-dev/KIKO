@@ -350,6 +350,7 @@ $("recordButton").addEventListener("click",async()=>{
     .kiko-video-note{display:block;width:min(260px,65vw);height:min(260px,65vw);object-fit:cover;border-radius:50%;background:#17131c;margin:4px auto}
     .bubble:has(.kiko-video-note){max-width:300px}
     .kiko-note-overlay{position:fixed;inset:0;z-index:10050;background:rgba(22,12,20,.82);display:flex;align-items:center;justify-content:center;padding:18px}
+    .kiko-note-overlay[hidden]{display:none!important}
     .kiko-note-panel{width:min(440px,100%);background:var(--surface,#fff);color:var(--text,#493541);border-radius:22px;padding:18px;display:flex;flex-direction:column;align-items:center;gap:12px;box-shadow:0 18px 70px #0006}
     .kiko-note-panel video{width:min( min(72vw,340px), 340px);height:min( min(72vw,340px), 340px);aspect-ratio:1;object-fit:cover;border-radius:50%;background:#111}
     .kiko-note-actions{display:flex;gap:10px;width:100%;justify-content:center;flex-wrap:wrap}
